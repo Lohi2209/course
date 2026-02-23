@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { getAuth } from './authApi';
+import { API_ROOT, toAbsoluteUrl } from './apiConfig';
 
-const UPLOAD_BASE_URL = 'http://localhost:8080/api/uploads';
+const UPLOAD_BASE_URL = `${API_ROOT}/uploads`;
 
 const uploadInstance = axios.create({
   baseURL: UPLOAD_BASE_URL,
@@ -102,7 +103,7 @@ export const deleteMaterial = async (materialId) => {
 export const downloadMaterial = (materialUrl) => {
   try {
     const link = document.createElement('a');
-    link.href = `http://localhost:8080/${materialUrl}`;
+    link.href = toAbsoluteUrl(materialUrl);
     link.download = materialUrl.split('/').pop();
     document.body.appendChild(link);
     link.click();

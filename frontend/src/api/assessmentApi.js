@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { getAuth } from './authApi';
+import { API_ROOT } from './apiConfig';
 
-const API_URL = 'http://localhost:8080/api/assessments';
+const API_URL = `${API_ROOT}/assessments`;
 
 const getAssessmentInstance = () => {
   return axios.create({

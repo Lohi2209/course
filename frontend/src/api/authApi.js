@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { API_ROOT } from './apiConfig';
 
 const AUTH_STORAGE_KEY = 'cms_auth';
 
 const authApi = axios.create({
-  baseURL: 'http://localhost:8080/api/auth',
+  baseURL: `${API_ROOT}/auth`,
   headers: {
     'Content-Type': 'application/json'
   }

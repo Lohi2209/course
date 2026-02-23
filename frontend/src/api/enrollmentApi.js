@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { clearAuth, getAuth } from './authApi';
+import { API_ROOT } from './apiConfig';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: API_ROOT,
     headers: {
         'Content-Type': 'application/json'
     }

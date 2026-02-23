@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMaterialsByCourse, createMaterial, deleteMaterial } from '../api/materialApi';
+import { toAbsoluteUrl } from '../api/apiConfig';
 import FileUploadComponent from './FileUploadComponent';
 
 function CourseMaterials({ course, canManage, canDelete, onClose }) {
@@ -192,7 +193,7 @@ function CourseMaterials({ course, canManage, canDelete, onClose }) {
                   {material.description && <p>{material.description}</p>}
                   {(material.materialType === 'PDF' || material.materialType === 'PPT') ? (
                     <a 
-                      href={`http://localhost:8080/${material.url}`} 
+                      href={toAbsoluteUrl(material.url)} 
                       download 
                       className="material-link"
                       title="Download file"
