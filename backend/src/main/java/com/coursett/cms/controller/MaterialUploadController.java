@@ -15,13 +15,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/uploads")
@@ -56,7 +56,7 @@ public class MaterialUploadController {
             validateFile(file);
 
             // Get course
-            Course course = courseRepository.findById(courseId)
+            Course course = courseRepository.findById(Objects.requireNonNull(courseId))
                     .orElseThrow(() -> new RuntimeException("Course not found"));
 
             // Get current user
@@ -95,7 +95,7 @@ public class MaterialUploadController {
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<MaterialResponse>> getMaterialsByCourse(@PathVariable Long courseId) {
         try {
-            Course course = courseRepository.findById(courseId)
+            Course course = courseRepository.findById(Objects.requireNonNull(courseId))
                     .orElseThrow(() -> new RuntimeException("Course not found"));
 
             List<CourseMaterial> materials = materialRepository.findByCourse(course);
@@ -114,7 +114,7 @@ public class MaterialUploadController {
     @GetMapping("/{id}")
     public ResponseEntity<MaterialResponse> getMaterialById(@PathVariable Long id) {
         try {
-            CourseMaterial material = materialRepository.findById(id)
+            CourseMaterial material = materialRepository.findById(Objects.requireNonNull(id))
                     .orElseThrow(() -> new RuntimeException("Material not found"));
             return ResponseEntity.ok(convertToResponse(material));
         } catch (Exception e) {
@@ -125,14 +125,14 @@ public class MaterialUploadController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMaterial(@PathVariable Long id) {
         try {
-            CourseMaterial material = materialRepository.findById(id)
+            CourseMaterial material = materialRepository.findById(Objects.requireNonNull(id))
                     .orElseThrow(() -> new RuntimeException("Material not found"));
 
             // Delete file from storage
             deleteFile(material.getUrl());
 
             // Delete from database
-            materialRepository.deleteById(id);
+            materialRepository.deleteById(Objects.requireNonNull(id));
 
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

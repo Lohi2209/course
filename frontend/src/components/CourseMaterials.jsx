@@ -75,6 +75,29 @@ function CourseMaterials({ course, canManage, canDelete, onClose }) {
     return icons[type] || '📎';
   };
 
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    // Match various YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/,
+      /youtube\.com\/embed\/([^&\s]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return `https://www.youtube.com/embed/${match[1]}`;
+      }
+    }
+    
+    return null;
+  };
+
+  const isYouTubeUrl = (url) => {
+    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+  };
+
   return (
     <div className="materials-overlay">
       <div className="materials-modal">
@@ -191,7 +214,22 @@ function CourseMaterials({ course, canManage, canDelete, onClose }) {
                     {new Date(material.uploadedAt).toLocaleDateString()}
                   </p>
                   {material.description && <p>{material.description}</p>}
-                  {(material.materialType === 'PDF' || material.materialType === 'PPT') ? (
+                  {isYouTubeUrl(material.url) ? (
+                    <div className="video-container">
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src={getYouTubeEmbedUrl(material.url)}
+                        title={material.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                      <a href={material.url} target="_blank" rel="noopener noreferrer" className="material-link" style={{marginTop: '10px', display: 'inline-block'}}>
+                        🔗 Open on YouTube →
+                      </a>
+                    </div>
+                  ) : (material.materialType === 'PDF' || material.materialType === 'PPT') ? (
                     <a 
                       href={toAbsoluteUrl(material.url)} 
                       download 

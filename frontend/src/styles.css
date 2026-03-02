@@ -344,6 +344,17 @@ button.danger {
   text-decoration: underline;
 }
 
+.video-container {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.video-container iframe {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
+
 button.small {
   padding: 6px 10px;
   font-size: 13px;
