@@ -131,7 +131,33 @@ const AdminDashboard = () => {
               <h3>Pending Approvals</h3>
               <p className="stat-number">{stats?.pendingEnrollments || 0}</p>
             </div>
+
+            <div className="stat-card alert">
+              <h3>Low Attendance Alerts</h3>
+              <p className="stat-number">{stats?.lowAttendanceCount || 0}</p>
+              <p className="stat-description">Students below 75%</p>
+            </div>
           </div>
+
+          {(stats?.lowAttendanceAlerts?.length || 0) > 0 && (
+            <div className="section">
+              <h3>Top Low Attendance Alerts</h3>
+              <div className="deadlines-list">
+                {stats.lowAttendanceAlerts.slice(0, 10).map((alert, idx) => (
+                  <div key={`${alert.studentId}-${alert.courseId}-${idx}`} className="deadline-card">
+                    <div className="deadline-header">
+                      <h4>{alert.studentName}</h4>
+                      <span className="course-badge">{alert.courseName}</span>
+                    </div>
+                    <div className="deadline-footer">
+                      <span className="deadline-date">Attendance: {alert.attendancePercentage}%</span>
+                      <span className="deadline-marks">Classes: {alert.totalClasses}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="chart-section">
             <h3>Enrollment Status Distribution</h3>

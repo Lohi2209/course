@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/assessments")
@@ -194,6 +195,12 @@ public class AssessmentController {
             if (request.containsKey("optionC")) question.setOptionC((String) request.get("optionC"));
             if (request.containsKey("optionD")) question.setOptionD((String) request.get("optionD"));
             if (request.containsKey("correctAnswer")) question.setCorrectAnswer((String) request.get("correctAnswer"));
+            if (request.containsKey("programmingLanguages")) question.setProgrammingLanguages((String) request.get("programmingLanguages"));
+            if (request.containsKey("starterCode")) question.setStarterCode((String) request.get("starterCode"));
+            if (request.containsKey("codingConstraints")) question.setCodingConstraints((String) request.get("codingConstraints"));
+            if (request.containsKey("sampleInput")) question.setSampleInput((String) request.get("sampleInput"));
+            if (request.containsKey("expectedOutput")) question.setExpectedOutput((String) request.get("expectedOutput"));
+            if (request.containsKey("testCasesJson")) question.setTestCasesJson((String) request.get("testCasesJson"));
             
             Question saved = questionRepository.save(question);
             return ResponseEntity.ok(saved);
@@ -256,6 +263,13 @@ public class AssessmentController {
                 if (key.startsWith("question_")) {
                     Long questionId = Long.parseLong(key.substring(9));
                     answerMap.put(questionId, value);
+                    return;
+                }
+                try {
+                    Long questionId = Long.parseLong(key);
+                    answerMap.put(questionId, value);
+                } catch (NumberFormatException ignored) {
+                    // Ignore unknown keys.
                 }
             });
             
@@ -290,11 +304,31 @@ public class AssessmentController {
                     if (studentAnswer.trim().equalsIgnoreCase(question.getCorrectAnswer().trim())) {
                         totalMarks += question.getMarks();
                     }
+                } else if (question.getQuestionType() == QuestionType.CODING) {
+                    totalMarks += evaluateCodingAnswerSkeleton(question, studentAnswer);
                 }
             }
         }
         
         return totalMarks;
+    }
+
+    private double evaluateCodingAnswerSkeleton(Question question, String rawStudentAnswer) {
+        // Skeleton only: this is the extension point for sandbox-based compilation/execution.
+        // Expected next step is to parse testCasesJson and run the code in an isolated executor.
+        if (rawStudentAnswer == null || rawStudentAnswer.isBlank()) {
+            return 0.0;
+        }
+
+        if (question.getExpectedOutput() == null || question.getExpectedOutput().isBlank()) {
+            return 0.0;
+        }
+
+        // Minimal heuristic for now: if student code mentions expected output tokens, award partial marks.
+        String normalizedAnswer = rawStudentAnswer.toLowerCase();
+        String normalizedExpected = question.getExpectedOutput().toLowerCase();
+        boolean containsHint = normalizedExpected.length() > 2 && normalizedAnswer.contains(normalizedExpected.substring(0, Math.min(8, normalizedExpected.length())));
+        return containsHint ? (question.getMarks() * 0.25) : 0.0;
     }
     
     @GetMapping("/{assessmentId}/attempts")
@@ -311,6 +345,26 @@ public class AssessmentController {
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         List<AssessmentAttempt> attempts = attemptRepository.findByStudentId(student.getId());
         return ResponseEntity.ok(attempts);
+    }
+
+    @GetMapping("/attempts/{attemptId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getAttemptDetails(@PathVariable Long attemptId,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
+        AppUser user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        AssessmentAttempt attempt = attemptRepository.findById(Objects.requireNonNull(attemptId))
+                .orElseThrow(() -> new RuntimeException("Attempt not found"));
+
+        boolean isStudentOwner = user.getRole() == Role.STUDENT && attempt.getStudent().getId().equals(user.getId());
+        boolean canManage = user.getRole() == Role.ADMIN || user.getRole() == Role.FACULTY || user.getRole() == Role.HOD;
+
+        if (!isStudentOwner && !canManage) {
+            return ResponseEntity.status(403).body(Map.of("message", "Forbidden"));
+        }
+
+        return ResponseEntity.ok(attempt);
     }
     
     @PutMapping("/attempts/{attemptId}/grade")

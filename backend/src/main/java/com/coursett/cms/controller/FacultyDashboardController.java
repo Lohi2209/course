@@ -1,10 +1,14 @@
 package com.coursett.cms.controller;
 
 import com.coursett.cms.dto.FacultyDashboardDTO;
+import com.coursett.cms.dto.LowAttendanceAlertDTO;
 import com.coursett.cms.model.AppUser;
 import com.coursett.cms.model.Assignment;
 import com.coursett.cms.model.Assessment;
+import com.coursett.cms.model.AttendanceStatus;
+import com.coursett.cms.model.Enrollment;
 import com.coursett.cms.model.EnrollmentStatus;
+import com.coursett.cms.repository.AttendanceRecordRepository;
 import com.coursett.cms.repository.AssignmentRepository;
 import com.coursett.cms.repository.AssessmentRepository;
 import com.coursett.cms.repository.AssessmentAttemptRepository;
@@ -20,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +53,9 @@ public class FacultyDashboardController {
     
     @Autowired
     private AppUserRepository userRepository;
+
+    @Autowired
+    private AttendanceRecordRepository attendanceRecordRepository;
     
     @GetMapping("/stats")
     @PreAuthorize("hasRole('FACULTY')")
@@ -84,14 +92,58 @@ public class FacultyDashboardController {
             .sorted((a1, a2) -> a1.getDueDate().compareTo(a2.getDueDate()))
             .limit(5)
             .collect(Collectors.toList());
+
+        List<LowAttendanceAlertDTO> lowAttendanceAlerts = buildLowAttendanceAlertsForFaculty(faculty.getId());
         
         FacultyDashboardDTO dto = new FacultyDashboardDTO(
             totalCourses,
             totalStudents,
             totalPendingGrading,
-            upcomingDeadlines
+            upcomingDeadlines,
+            (long) lowAttendanceAlerts.size(),
+            lowAttendanceAlerts
         );
         
         return ResponseEntity.ok(dto);
+    }
+
+    private List<LowAttendanceAlertDTO> buildLowAttendanceAlertsForFaculty(Long facultyId) {
+        List<Enrollment> approvedEnrollments = enrollmentRepository.findByStatus(EnrollmentStatus.APPROVED)
+                .stream()
+                .filter(enrollment -> enrollment.getCourse().getFaculty() != null
+                        && facultyId.equals(enrollment.getCourse().getFaculty().getId()))
+                .collect(Collectors.toList());
+
+        List<LowAttendanceAlertDTO> alerts = new ArrayList<>();
+
+        for (Enrollment enrollment : approvedEnrollments) {
+            Long courseId = enrollment.getCourse().getId();
+            Long studentId = enrollment.getStudent().getId();
+
+            long totalClasses = attendanceRecordRepository.countByCourseIdAndStudentId(courseId, studentId);
+            if (totalClasses <= 0) {
+                continue;
+            }
+
+            long present = attendanceRecordRepository.countByCourseIdAndStudentIdAndStatus(courseId, studentId, AttendanceStatus.PRESENT);
+            long late = attendanceRecordRepository.countByCourseIdAndStudentIdAndStatus(courseId, studentId, AttendanceStatus.LATE);
+            double percentage = Math.round(((present + late) * 10000.0 / totalClasses)) / 100.0;
+
+            if (percentage < 75.0) {
+                LowAttendanceAlertDTO alert = new LowAttendanceAlertDTO();
+                alert.setCourseId(courseId);
+                alert.setCourseName(enrollment.getCourse().getCourseName());
+                alert.setStudentId(studentId);
+                alert.setStudentName(enrollment.getStudent().getFullName());
+                alert.setAttendancePercentage(percentage);
+                alert.setTotalClasses(totalClasses);
+                alerts.add(alert);
+            }
+        }
+
+        return alerts.stream()
+                .sorted((a, b) -> Double.compare(a.getAttendancePercentage(), b.getAttendancePercentage()))
+                .limit(20)
+                .collect(Collectors.toList());
     }
 }

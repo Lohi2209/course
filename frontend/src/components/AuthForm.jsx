@@ -9,12 +9,14 @@ function AuthForm({ onAuthSuccess }) {
   const [role, setRole] = useState('STUDENT');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const isLogin = mode === 'login';
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setSubmitting(true);
 
     try {
       const authData = isLogin 
@@ -24,6 +26,8 @@ function AuthForm({ onAuthSuccess }) {
     } catch (apiError) {
       const message = apiError.response?.data?.message || 'Authentication failed. Please try again.';
       setError(message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -106,10 +110,13 @@ function AuthForm({ onAuthSuccess }) {
         </label>
 
         <div className="form-actions">
-          <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
+          <button type="submit" disabled={submitting}>
+            {submitting ? 'Please wait...' : (isLogin ? 'Login' : 'Register')}
+          </button>
           <button
             type="button"
             className="secondary"
+            disabled={submitting}
             onClick={() => {
               setError('');
               setMode(isLogin ? 'register' : 'login');

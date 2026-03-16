@@ -11,6 +11,9 @@ import FacultyDashboard from './components/FacultyDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import AssignmentManager from './components/AssignmentManager';
 import Gradebook from './components/Gradebook';
+import AttendanceManager from './components/AttendanceManager';
+import StudentAttendance from './components/StudentAttendance';
+import MessagingCenter from './components/MessagingCenter';
 import { createCourse, deleteCourse, getCourses, updateCourse, getMyEnrolledCourses } from './api/courseApi';
 import AuthForm from './components/AuthForm';
 import { clearAuth, getAuth, login, register, saveAuth } from './api/authApi';
@@ -73,6 +76,7 @@ function App() {
         || 'Authentication failed. Please check your credentials.';
       console.error('=== AUTH ERROR MESSAGE ===', errorMsg);
       setError(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
+      throw apiError;
     }
   };
 
@@ -191,6 +195,28 @@ function App() {
           </button>
         )}
         {isStudent && (
+          <button
+            className={activeTab === 'attendance' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('attendance');
+              setError('');
+            }}
+          >
+            My Attendance
+          </button>
+        )}
+        {!isStudent && (
+          <button
+            className={activeTab === 'attendanceManager' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('attendanceManager');
+              setError('');
+            }}
+          >
+            Attendance Manager
+          </button>
+        )}
+        {isStudent && (
           <>
             <button
               className={activeTab === 'register' ? 'active' : ''}
@@ -235,6 +261,15 @@ function App() {
           }}
         >
           My Profile
+        </button>
+        <button
+          className={activeTab === 'messages' ? 'active' : ''}
+          onClick={() => {
+            setActiveTab('messages');
+            setError('');
+          }}
+        >
+          Messages
         </button>
       </div>
 
@@ -302,7 +337,13 @@ function App() {
 
       {activeTab === 'gradebook' && <Gradebook />}
 
+      {activeTab === 'attendance' && <StudentAttendance />}
+
+      {activeTab === 'attendanceManager' && <AttendanceManager />}
+
       {activeTab === 'profile' && <Profile />}
+
+      {activeTab === 'messages' && <MessagingCenter />}
 
       {viewingMaterials && (
         <CourseMaterials

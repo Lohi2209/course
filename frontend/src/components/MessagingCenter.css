@@ -1,0 +1,323 @@
+.messaging-center {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.messaging-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.messaging-header h2 {
+  margin: 0;
+}
+
+.compose-btn {
+  padding: 8px 18px;
+  font-size: 0.92rem;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────────── */
+.msg-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 12px;
+}
+
+.msg-tabs button {
+  padding: 8px 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  border-radius: 4px 4px 0 0;
+}
+
+.msg-tabs button.active {
+  color: #1a73e8;
+  border-bottom-color: #1a73e8;
+  font-weight: 600;
+}
+
+.msg-tabs button:hover:not(.active) {
+  background: #f5f5f5;
+}
+
+.unread-badge {
+  background: #e53935;
+  color: #fff;
+  border-radius: 50%;
+  padding: 1px 6px;
+  font-size: 0.72rem;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* ── Message List ──────────────────────────────────────────────────────────── */
+.msg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.empty-msg {
+  padding: 32px;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+.msg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.15s;
+  gap: 12px;
+}
+
+.msg-row:hover {
+  background: #f0f7ff;
+  border-color: #90caf9;
+}
+
+.msg-row.msg-unread {
+  border-left: 4px solid #1a73e8;
+  background: #eaf3ff;
+}
+
+.msg-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.msg-who {
+  font-size: 0.88rem;
+  color: #444;
+}
+
+.msg-subject {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-preview {
+  font-size: 0.82rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.msg-row-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.msg-date {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.msg-replies {
+  font-size: 0.78rem;
+  color: #555;
+}
+
+.btn-icon-danger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0.4;
+  padding: 0;
+}
+
+.btn-icon-danger:hover {
+  opacity: 1;
+}
+
+/* ── Role badges ───────────────────────────────────────────────────────────── */
+.role-badge {
+  font-size: 0.7rem;
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 4px;
+  font-weight: 600;
+}
+
+.role-admin    { background: #fce4ec; color: #c62828; }
+.role-faculty  { background: #e8f5e9; color: #2e7d32; }
+.role-hod      { background: #fff3e0; color: #e65100; }
+.role-student  { background: #e3f2fd; color: #1565c0; }
+
+.course-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  background: #ede7f6;
+  color: #4527a0;
+  border-radius: 4px;
+  padding: 1px 7px;
+  margin-right: 4px;
+}
+
+/* ── Thread panel ──────────────────────────────────────────────────────────── */
+.thread-panel {
+  border: 1px solid #c5c5c5;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.thread-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.thread-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.btn-sm {
+  padding: 4px 12px;
+  font-size: 0.82rem;
+}
+
+.thread-message {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.thread-message.original {
+  background: #fafafa;
+}
+
+.thread-message.reply.mine {
+  background: #e3f2fd;
+  margin-left: 32px;
+  border-left: 3px solid #1a73e8;
+}
+
+.thread-message.reply.theirs {
+  background: #f9fbe7;
+  margin-right: 32px;
+  border-left: 3px solid #8bc34a;
+}
+
+.thread-msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+}
+
+.thread-msg-body {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.reply-form {
+  padding: 14px 18px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  background: #fafafa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.reply-form textarea {
+  flex: 1;
+  resize: vertical;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-family: inherit;
+}
+
+.reply-form textarea:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+/* ── Compose modal ─────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-box h3 {
+  margin: 0 0 16px;
+}
+
+/* ── Discussion course picker ──────────────────────────────────────────────── */
+.discussion-course-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.discussion-course-picker select {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* ── Success message ───────────────────────────────────────────────────────── */
+.success-message {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  color: #2e7d32;
+  padding: 8px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+}

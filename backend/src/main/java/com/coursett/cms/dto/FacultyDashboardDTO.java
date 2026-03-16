@@ -8,14 +8,20 @@ public class FacultyDashboardDTO {
     private Long totalStudents;
     private Long pendingSubmissions;
     private List<Assignment> upcomingDeadlines;
+    private Long lowAttendanceCount;
+    private List<LowAttendanceAlertDTO> lowAttendanceAlerts;
     
     public FacultyDashboardDTO() {}
     
-    public FacultyDashboardDTO(Long totalCourses, Long totalStudents, Long pendingSubmissions, List<Assignment> upcomingDeadlines) {
+    public FacultyDashboardDTO(Long totalCourses, Long totalStudents, Long pendingSubmissions,
+                               List<Assignment> upcomingDeadlines, Long lowAttendanceCount,
+                               List<LowAttendanceAlertDTO> lowAttendanceAlerts) {
         this.totalCourses = totalCourses;
         this.totalStudents = totalStudents;
         this.pendingSubmissions = pendingSubmissions;
         this.upcomingDeadlines = upcomingDeadlines;
+        this.lowAttendanceCount = lowAttendanceCount;
+        this.lowAttendanceAlerts = lowAttendanceAlerts;
     }
     
     // Getters and Setters
@@ -49,5 +55,21 @@ public class FacultyDashboardDTO {
     
     public void setUpcomingDeadlines(List<Assignment> upcomingDeadlines) {
         this.upcomingDeadlines = upcomingDeadlines;
+    }
+
+    public Long getLowAttendanceCount() {
+        return lowAttendanceCount;
+    }
+
+    public void setLowAttendanceCount(Long lowAttendanceCount) {
+        this.lowAttendanceCount = lowAttendanceCount;
+    }
+
+    public List<LowAttendanceAlertDTO> getLowAttendanceAlerts() {
+        return lowAttendanceAlerts;
+    }
+
+    public void setLowAttendanceAlerts(List<LowAttendanceAlertDTO> lowAttendanceAlerts) {
+        this.lowAttendanceAlerts = lowAttendanceAlerts;
     }
 }

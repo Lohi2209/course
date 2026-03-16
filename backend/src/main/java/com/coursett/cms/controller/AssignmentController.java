@@ -20,6 +20,9 @@ public class AssignmentController {
     
     @Autowired
     private AssignmentRepository assignmentRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
     
     @Autowired
     private SubmissionRepository submissionRepository;
@@ -48,9 +51,12 @@ public class AssignmentController {
             Assignment assignment = new Assignment();
             assignment.setTitle((String) request.get("title"));
             assignment.setDescription((String) request.get("description"));
-            assignment.setMaxMarks((Integer) request.get("maxMarks"));
+            assignment.setMaxMarks(Integer.valueOf(request.get("maxMarks").toString()));
             assignment.setDueDate(LocalDateTime.parse((String) request.get("dueDate")));
             assignment.setCreatedBy(faculty);
+            if (request.get("assignmentType") != null) {
+                assignment.setAssignmentType(AssignmentType.valueOf(request.get("assignmentType").toString()));
+            }
             
             Long courseId = Long.valueOf(request.get("courseId").toString());
             Course course = courseRepository.findById(courseId)
@@ -74,8 +80,11 @@ public class AssignmentController {
             
             if (request.containsKey("title")) assignment.setTitle((String) request.get("title"));
             if (request.containsKey("description")) assignment.setDescription((String) request.get("description"));
-            if (request.containsKey("maxMarks")) assignment.setMaxMarks((Integer) request.get("maxMarks"));
+            if (request.containsKey("maxMarks")) assignment.setMaxMarks(Integer.valueOf(request.get("maxMarks").toString()));
             if (request.containsKey("dueDate")) assignment.setDueDate(LocalDateTime.parse((String) request.get("dueDate")));
+            if (request.containsKey("assignmentType") && request.get("assignmentType") != null) {
+                assignment.setAssignmentType(AssignmentType.valueOf(request.get("assignmentType").toString()));
+            }
             
             Assignment updated = assignmentRepository.save(assignment);
             return ResponseEntity.ok(updated);
@@ -90,6 +99,79 @@ public class AssignmentController {
     public ResponseEntity<?> deleteAssignment(@PathVariable Long id) {
         assignmentRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "Assignment deleted successfully"));
+    }
+
+    // ── Question endpoints for MCQ/CODING assignments ──────────────────────────
+
+    @GetMapping("/{id}/questions")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Map<String, Object>>> getAssignmentQuestions(@PathVariable Long id) {
+        List<Question> questions = questionRepository.findByAssignmentIdOrderByOrderAsc(id);
+        return ResponseEntity.ok(questions.stream().map(this::toQuestionDto).toList());
+    }
+
+    @PostMapping("/{id}/questions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'HOD')")
+    @SuppressWarnings("null")
+    public ResponseEntity<?> addAssignmentQuestion(@PathVariable Long id,
+                                                   @RequestBody Map<String, Object> request) {
+        try {
+            Assignment assignment = assignmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Assignment not found"));
+
+            Question question = new Question();
+            question.setAssignment(assignment);
+            question.setQuestionText((String) request.get("questionText"));
+            question.setQuestionType(QuestionType.valueOf((String) request.get("questionType")));
+            question.setMarks(Integer.valueOf(request.get("marks").toString()));
+            question.setOrder(request.get("order") != null ? Integer.valueOf(request.get("order").toString()) : 0);
+            question.setOptionA((String) request.get("optionA"));
+            question.setOptionB((String) request.get("optionB"));
+            question.setOptionC((String) request.get("optionC"));
+            question.setOptionD((String) request.get("optionD"));
+            question.setCorrectAnswer((String) request.get("correctAnswer"));
+            question.setProgrammingLanguages((String) request.get("programmingLanguages"));
+            question.setStarterCode((String) request.get("starterCode"));
+            question.setCodingConstraints((String) request.get("codingConstraints"));
+            question.setSampleInput((String) request.get("sampleInput"));
+            question.setExpectedOutput((String) request.get("expectedOutput"));
+            question.setTestCasesJson((String) request.get("testCasesJson"));
+
+            Question saved = questionRepository.save(question);
+            return ResponseEntity.ok(toQuestionDto(saved));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{id}/questions/{qId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'HOD')")
+    @SuppressWarnings("null")
+    public ResponseEntity<?> deleteAssignmentQuestion(@PathVariable Long id, @PathVariable Long qId) {
+        questionRepository.deleteById(qId);
+        return ResponseEntity.ok(Map.of("message", "Question deleted"));
+    }
+
+    private Map<String, Object> toQuestionDto(Question q) {
+        Map<String, Object> dto = new java.util.LinkedHashMap<>();
+        dto.put("id", q.getId());
+        dto.put("questionText", q.getQuestionText());
+        dto.put("questionType", q.getQuestionType());
+        dto.put("optionA", q.getOptionA());
+        dto.put("optionB", q.getOptionB());
+        dto.put("optionC", q.getOptionC());
+        dto.put("optionD", q.getOptionD());
+        dto.put("correctAnswer", q.getCorrectAnswer());
+        dto.put("programmingLanguages", q.getProgrammingLanguages());
+        dto.put("starterCode", q.getStarterCode());
+        dto.put("codingConstraints", q.getCodingConstraints());
+        dto.put("sampleInput", q.getSampleInput());
+        dto.put("expectedOutput", q.getExpectedOutput());
+        dto.put("testCasesJson", q.getTestCasesJson());
+        dto.put("marks", q.getMarks());
+        dto.put("order", q.getOrder());
+        dto.put("assignmentId", q.getAssignment() != null ? q.getAssignment().getId() : null);
+        return dto;
     }
     
     @PostMapping("/{assignmentId}/submit")
@@ -114,7 +196,11 @@ public class AssignmentController {
             submission.setAssignment(assignment);
             submission.setStudent(student);
             submission.setSubmissionText(request.get("submissionText"));
-            submission.setFileUrl(request.get("fileUrl"));
+            String fileUrl = request.get("fileUrl");
+            if (fileUrl == null || fileUrl.isBlank()) {
+                fileUrl = request.get("submissionUrl");
+            }
+            submission.setFileUrl(fileUrl);
             
             Submission saved = submissionRepository.save(submission);
             return ResponseEntity.ok(saved);

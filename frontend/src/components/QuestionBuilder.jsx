@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { addQuestion } from '../api/assessmentApi';
+import { addAssignmentQuestion } from '../api/assignmentApi';
 
-const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
+const QuestionBuilder = ({ assessmentId, assignmentId, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
     questionText: '',
     questionType: 'MULTIPLE_CHOICE',
@@ -10,6 +11,12 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
     optionC: '',
     optionD: '',
     correctAnswer: '',
+    programmingLanguages: 'Java,Python,JavaScript',
+    starterCode: '',
+    codingConstraints: '',
+    sampleInput: '',
+    expectedOutput: '',
+    testCasesJson: '[{"input":"","output":""}]',
     marks: '',
     order: 0
   });
@@ -43,7 +50,11 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
       setLoading(true);
       setError(null);
       
-      await addQuestion(assessmentId, formData);
+      if (assignmentId) {
+        await addAssignmentQuestion(assignmentId, formData);
+      } else {
+        await addQuestion(assessmentId, formData);
+      }
       
       // Reset form for next question
       setFormData({
@@ -54,6 +65,12 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
         optionC: '',
         optionD: '',
         correctAnswer: '',
+        programmingLanguages: 'Java,Python,JavaScript',
+        starterCode: '',
+        codingConstraints: '',
+        sampleInput: '',
+        expectedOutput: '',
+        testCasesJson: '[{"input":"","output":""}]',
         marks: formData.marks,
         order: formData.order + 1
       });
@@ -69,6 +86,7 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
 
   const isMCQ = formData.questionType === 'MULTIPLE_CHOICE';
   const isTrueFalse = formData.questionType === 'TRUE_FALSE';
+  const isCoding = formData.questionType === 'CODING';
 
   return (
     <div className="question-builder">
@@ -90,6 +108,7 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
             <option value="TRUE_FALSE">True/False</option>
             <option value="SHORT_ANSWER">Short Answer</option>
             <option value="ESSAY">Essay</option>
+            <option value="CODING">Coding</option>
           </select>
         </div>
 
@@ -191,7 +210,7 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
           </div>
         )}
 
-        {!isMCQ && !isTrueFalse && (
+        {!isMCQ && !isTrueFalse && !isCoding && (
           <div className="form-group">
             <label htmlFor="correctAnswer">Model Answer/Keywords *</label>
             <textarea
@@ -204,6 +223,97 @@ const QuestionBuilder = ({ assessmentId, onSuccess, onCancel }) => {
               required
             />
           </div>
+        )}
+
+        {isCoding && (
+          <>
+            <div className="form-group">
+              <label htmlFor="programmingLanguages">Allowed Languages (comma separated) *</label>
+              <input
+                type="text"
+                id="programmingLanguages"
+                name="programmingLanguages"
+                value={formData.programmingLanguages}
+                onChange={handleChange}
+                placeholder="Java,Python,JavaScript"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="starterCode">Starter Code (optional)</label>
+              <textarea
+                id="starterCode"
+                name="starterCode"
+                value={formData.starterCode}
+                onChange={handleChange}
+                rows="5"
+                placeholder="Provide starter function/template code"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="codingConstraints">Problem Constraints / Expected Output *</label>
+              <textarea
+                id="codingConstraints"
+                name="codingConstraints"
+                value={formData.codingConstraints}
+                onChange={handleChange}
+                rows="3"
+                placeholder="Input format, output format, constraints, examples"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="sampleInput">Sample Input</label>
+              <textarea
+                id="sampleInput"
+                name="sampleInput"
+                value={formData.sampleInput}
+                onChange={handleChange}
+                rows="3"
+                placeholder="Example input for student reference"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="expectedOutput">Expected Output</label>
+              <textarea
+                id="expectedOutput"
+                name="expectedOutput"
+                value={formData.expectedOutput}
+                onChange={handleChange}
+                rows="3"
+                placeholder="Expected output for sample input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="testCasesJson">Test Cases JSON (skeleton)</label>
+              <textarea
+                id="testCasesJson"
+                name="testCasesJson"
+                value={formData.testCasesJson}
+                onChange={handleChange}
+                rows="4"
+                placeholder='[{"input":"1 2","output":"3"}]'
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="correctAnswer">Reference Solution / Evaluation Notes *</label>
+              <textarea
+                id="correctAnswer"
+                name="correctAnswer"
+                value={formData.correctAnswer}
+                onChange={handleChange}
+                rows="4"
+                placeholder="Reference logic for manual evaluation"
+                required
+              />
+            </div>
+          </>
         )}
 
         <div className="form-row">

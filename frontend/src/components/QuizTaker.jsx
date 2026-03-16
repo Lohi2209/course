@@ -4,6 +4,7 @@ import { getQuestions, startAssessment, submitAssessment } from '../api/assessme
 const QuizTaker = ({ assessment, onComplete, onCancel }) => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
+  const [codingLanguage, setCodingLanguage] = useState({});
   const [attemptId, setAttemptId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -63,6 +64,13 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
     }));
   };
 
+  const handleCodingLanguageChange = (questionId, language) => {
+    setCodingLanguage((prev) => ({
+      ...prev,
+      [questionId]: language,
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!window.confirm('Are you sure you want to submit? You cannot change answers after submission.')) {
       return;
@@ -70,7 +78,21 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
 
     try {
       setSubmitting(true);
-      await submitAssessment(assessment.id, answers);
+      const submissionPayload = Object.entries(answers).reduce((acc, [questionId, answer]) => {
+        const q = questions.find((item) => String(item.id) === String(questionId));
+        if (q?.questionType === 'CODING') {
+          const selectedLanguage = codingLanguage[questionId] || 'PlainText';
+          acc[`question_${questionId}`] = JSON.stringify({
+            language: selectedLanguage,
+            code: answer,
+          });
+        } else {
+          acc[`question_${questionId}`] = answer;
+        }
+        return acc;
+      }, {});
+
+      await submitAssessment(assessment.id, submissionPayload);
       onComplete();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit assessment');
@@ -223,6 +245,52 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
                 onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                 placeholder="Enter your answer here..."
               />
+            )}
+
+            {question.questionType === 'CODING' && (
+              <div className="coding-question-block">
+                <label>
+                  Programming Language
+                  <select
+                    value={codingLanguage[question.id] || (question.programmingLanguages?.split(',')[0] || 'Java')}
+                    onChange={(e) => handleCodingLanguageChange(question.id, e.target.value)}
+                  >
+                    {(question.programmingLanguages || 'Java')
+                      .split(',')
+                      .map((lang) => lang.trim())
+                      .filter(Boolean)
+                      .map((lang) => (
+                        <option key={lang} value={lang}>{lang}</option>
+                      ))}
+                  </select>
+                </label>
+
+                {question.codingConstraints && (
+                  <p className="coding-guidelines">{question.codingConstraints}</p>
+                )}
+
+                {question.sampleInput && (
+                  <p className="coding-guidelines"><strong>Sample Input:</strong> {question.sampleInput}</p>
+                )}
+
+                {question.expectedOutput && (
+                  <p className="coding-guidelines"><strong>Expected Output:</strong> {question.expectedOutput}</p>
+                )}
+
+                {question.testCasesJson && (
+                  <p className="coding-guidelines">
+                    <strong>Auto-Evaluation:</strong> Coding auto-check skeleton enabled. Detailed test execution pipeline will validate against configured test cases.
+                  </p>
+                )}
+
+                <textarea
+                  className="answer-textarea"
+                  rows={10}
+                  value={answers[question.id] || question.starterCode || ''}
+                  onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                  placeholder="Write your code solution here..."
+                />
+              </div>
             )}
           </div>
         ))}

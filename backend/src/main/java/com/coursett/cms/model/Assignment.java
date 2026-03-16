@@ -21,6 +21,10 @@ public class Assignment {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assignment_type", nullable = false)
+    private AssignmentType assignmentType = AssignmentType.WRITTEN;
+
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
     
@@ -102,5 +106,13 @@ public class Assignment {
     
     public void setCreatedBy(AppUser createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public AssignmentType getAssignmentType() {
+        return assignmentType;
+    }
+
+    public void setAssignmentType(AssignmentType assignmentType) {
+        this.assignmentType = assignmentType;
     }
 }

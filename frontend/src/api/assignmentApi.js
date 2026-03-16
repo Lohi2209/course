@@ -89,6 +89,21 @@ export const gradeSubmission = async (submissionId, gradeData) => {
   return response.data;
 };
 
+export const getAssignmentQuestions = async (assignmentId) => {
+  const response = await assignmentInstance.get(`/${assignmentId}/questions`);
+  return response.data;
+};
+
+export const addAssignmentQuestion = async (assignmentId, questionData) => {
+  const response = await assignmentInstance.post(`/${assignmentId}/questions`, questionData);
+  return response.data;
+};
+
+export const deleteAssignmentQuestion = async (assignmentId, questionId) => {
+  const response = await assignmentInstance.delete(`/${assignmentId}/questions/${questionId}`);
+  return response.data;
+};
+
 export default {
   getAssignmentsByCourse,
   createAssignment,

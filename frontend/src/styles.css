@@ -363,6 +363,115 @@ button.small {
 .card-actions {
   margin-top: 12px;
 }
+
+.attendance-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.attendance-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0 16px;
+  align-items: end;
+}
+
+.attendance-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  font-weight: 600;
+}
+
+.attendance-controls select,
+.attendance-controls input {
+  padding: 9px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.attendance-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.attendance-table th,
+.attendance-table td {
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  text-align: left;
+}
+
+.attendance-table th {
+  background: #f8fafc;
+}
+
+.attendance-table td select,
+.attendance-table td input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.attendance-overview {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.attendance-kpi {
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  color: #1e3a8a;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 220px;
+}
+
+.attendance-kpi span {
+  display: block;
+  font-size: 13px;
+}
+
+.attendance-kpi strong {
+  font-size: 24px;
+}
+
+.coding-question-block {
+  margin-top: 10px;
+}
+
+.coding-question-block label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.coding-question-block select {
+  margin-left: 8px;
+  padding: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.coding-guidelines {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  color: #374151;
+}
 /* Enrollment Features Styles */
 .registration-modal,
 .enrollment-modal,
@@ -1682,6 +1791,7 @@ button.danger:hover:not(:disabled) {
   margin: 0 0 10px 0;
   line-height: 1.4;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;

@@ -252,6 +252,39 @@
   border-color: #4CAF50;
 }
 
+.question-submission-block {
+  margin-bottom: 16px;
+}
+
+.student-question-item {
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.student-question-item h4 {
+  margin: 0 0 10px 0;
+}
+
+.mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mcq-option-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.coding-answer-block {
+  margin-top: 8px;
+}
+
 .card-header {
   background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;

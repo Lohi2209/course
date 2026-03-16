@@ -1,10 +1,14 @@
 package com.coursett.cms.controller;
 
 import com.coursett.cms.dto.AdminDashboardDTO;
+import com.coursett.cms.dto.LowAttendanceAlertDTO;
 import com.coursett.cms.dto.ProfileResponse;
 import com.coursett.cms.model.AppUser;
+import com.coursett.cms.model.AttendanceStatus;
+import com.coursett.cms.model.Enrollment;
 import com.coursett.cms.model.EnrollmentStatus;
 import com.coursett.cms.model.Role;
+import com.coursett.cms.repository.AttendanceRecordRepository;
 import com.coursett.cms.repository.AppUserRepository;
 import com.coursett.cms.repository.CourseRepository;
 import com.coursett.cms.repository.EnrollmentRepository;
@@ -17,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/dashboard/admin")
@@ -31,12 +36,16 @@ public class AdminDashboardController {
     
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+
+        @Autowired
+        private AttendanceRecordRepository attendanceRecordRepository;
     
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'HOD')")
     public ResponseEntity<AdminDashboardDTO> getAdminStats() {
         Long totalStudents = userRepository.countByRole(Role.STUDENT);
         Long totalFaculty = userRepository.countByRole(Role.FACULTY);
+        Long totalHod = userRepository.countByRole(Role.HOD);
         Long totalCourses = courseRepository.count();
         Long totalEnrollments = enrollmentRepository.count();
         
@@ -47,6 +56,8 @@ public class AdminDashboardController {
         enrollmentsByStatus.put("DROPPED", enrollmentRepository.countByStatus(EnrollmentStatus.DROPPED));
         
         Long pendingEnrollments = enrollmentRepository.countByStatus(EnrollmentStatus.PENDING);
+
+                List<LowAttendanceAlertDTO> lowAttendanceAlerts = buildLowAttendanceAlertsForAllApprovedEnrollments();
         
         AdminDashboardDTO dto = new AdminDashboardDTO(
             totalStudents, 
@@ -54,7 +65,10 @@ public class AdminDashboardController {
             totalEnrollments, 
             enrollmentsByStatus,
             totalFaculty,
-            pendingEnrollments
+                        totalHod,
+                        pendingEnrollments,
+                        (long) lowAttendanceAlerts.size(),
+                        lowAttendanceAlerts
         );
         
         return ResponseEntity.ok(dto);
@@ -123,4 +137,47 @@ public class AdminDashboardController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
+
+        private List<LowAttendanceAlertDTO> buildLowAttendanceAlertsForAllApprovedEnrollments() {
+                List<Enrollment> approvedEnrollments = enrollmentRepository.findByStatus(EnrollmentStatus.APPROVED);
+                List<LowAttendanceAlertDTO> alerts = new ArrayList<>();
+
+                for (Enrollment enrollment : approvedEnrollments) {
+                        long totalClasses = attendanceRecordRepository.countByCourseIdAndStudentId(
+                                        enrollment.getCourse().getId(),
+                                        enrollment.getStudent().getId()
+                        );
+                        if (totalClasses <= 0) {
+                                continue;
+                        }
+
+                        long present = attendanceRecordRepository.countByCourseIdAndStudentIdAndStatus(
+                                        enrollment.getCourse().getId(),
+                                        enrollment.getStudent().getId(),
+                                        AttendanceStatus.PRESENT
+                        );
+                        long late = attendanceRecordRepository.countByCourseIdAndStudentIdAndStatus(
+                                        enrollment.getCourse().getId(),
+                                        enrollment.getStudent().getId(),
+                                        AttendanceStatus.LATE
+                        );
+                        double percentage = Math.round(((present + late) * 10000.0 / totalClasses)) / 100.0;
+
+                        if (percentage < 75.0) {
+                                LowAttendanceAlertDTO alert = new LowAttendanceAlertDTO();
+                                alert.setCourseId(enrollment.getCourse().getId());
+                                alert.setCourseName(enrollment.getCourse().getCourseName());
+                                alert.setStudentId(enrollment.getStudent().getId());
+                                alert.setStudentName(enrollment.getStudent().getFullName());
+                                alert.setAttendancePercentage(percentage);
+                                alert.setTotalClasses(totalClasses);
+                                alerts.add(alert);
+                        }
+                }
+
+                return alerts.stream()
+                                .sorted((a, b) -> Double.compare(a.getAttendancePercentage(), b.getAttendancePercentage()))
+                                .limit(20)
+                                .collect(Collectors.toList());
+        }
 }
