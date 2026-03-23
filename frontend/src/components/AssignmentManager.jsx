@@ -15,6 +15,8 @@ import QuestionBuilder from './QuestionBuilder';
 import './AssignmentManager.css';
 
 const AssignmentManager = () => {
+  const normalizeQuestionType = (type) => String(type || '').trim().toUpperCase().replace('-', '_');
+
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [assignments, setAssignments] = useState([]);
@@ -205,7 +207,8 @@ const AssignmentManager = () => {
     let payload;
     if (isQuestionBased && assignmentQuestions.length > 0) {
       const missingAnswers = assignmentQuestions.filter((q) => {
-        if (q.questionType === 'CODING') {
+        const questionType = normalizeQuestionType(q.questionType);
+        if (questionType === 'CODING') {
           return !questionAnswers[q.id] || !String(questionAnswers[q.id]).trim();
         }
         return !questionAnswers[q.id];
@@ -217,17 +220,18 @@ const AssignmentManager = () => {
       }
 
       const answers = assignmentQuestions.map((q) => {
-        if (q.questionType === 'CODING') {
+        const questionType = normalizeQuestionType(q.questionType);
+        if (questionType === 'CODING') {
           return {
             questionId: q.id,
-            questionType: q.questionType,
+            questionType,
             language: codingLanguages[q.id] || (q.programmingLanguages?.split(',')[0] || 'Java').trim(),
             code: questionAnswers[q.id]
           };
         }
         return {
           questionId: q.id,
-          questionType: q.questionType,
+          questionType,
           answer: questionAnswers[q.id]
         };
       });
@@ -447,7 +451,7 @@ const AssignmentManager = () => {
                             <span style={{ fontWeight: 400 }}> ({q.marks} marks)</span>
                           </h4>
 
-                          {q.questionType === 'MULTIPLE_CHOICE' && (
+                          {normalizeQuestionType(q.questionType) === 'MULTIPLE_CHOICE' && (
                             <div className="mcq-options">
                               {[q.optionA, q.optionB, q.optionC, q.optionD].filter(Boolean).map((opt, i) => {
                                 const optionLetter = ['A', 'B', 'C', 'D'][i];
@@ -467,7 +471,24 @@ const AssignmentManager = () => {
                             </div>
                           )}
 
-                          {q.questionType === 'CODING' && (
+                          {normalizeQuestionType(q.questionType) === 'TRUE_FALSE' && (
+                            <div className="mcq-options">
+                              {[{ value: 'TRUE', label: 'True' }, { value: 'FALSE', label: 'False' }].map((opt) => (
+                                <label key={`${q.id}-${opt.value}`} className="mcq-option-row">
+                                  <input
+                                    type="radio"
+                                    name={`question-${q.id}`}
+                                    value={opt.value}
+                                    checked={questionAnswers[q.id] === opt.value}
+                                    onChange={(ev) => handleQuestionAnswerChange(q.id, ev.target.value)}
+                                  />
+                                  <span>{opt.label}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+
+                          {normalizeQuestionType(q.questionType) === 'CODING' && (
                             <div className="coding-answer-block">
                               <div className="form-group">
                                 <label>Language</label>
@@ -606,7 +627,7 @@ const AssignmentManager = () => {
 
                             const initialLanguages = {};
                             qs.forEach((q) => {
-                              if (q.questionType === 'CODING') {
+                              if (normalizeQuestionType(q.questionType) === 'CODING') {
                                 initialLanguages[q.id] = (q.programmingLanguages?.split(',')[0] || 'Java').trim();
                               }
                             });

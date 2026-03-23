@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getQuestions, startAssessment, submitAssessment } from '../api/assessmentApi';
 
 const QuizTaker = ({ assessment, onComplete, onCancel }) => {
+  const normalizeQuestionType = (type) => String(type || '').trim().toUpperCase().replace('-', '_');
+
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [codingLanguage, setCodingLanguage] = useState({});
@@ -80,7 +82,7 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
       setSubmitting(true);
       const submissionPayload = Object.entries(answers).reduce((acc, [questionId, answer]) => {
         const q = questions.find((item) => String(item.id) === String(questionId));
-        if (q?.questionType === 'CODING') {
+        if (normalizeQuestionType(q?.questionType) === 'CODING') {
           const selectedLanguage = codingLanguage[questionId] || 'PlainText';
           acc[`question_${questionId}`] = JSON.stringify({
             language: selectedLanguage,
@@ -186,6 +188,10 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
       <div className="questions-container">
         {questions.map((question, index) => (
           <div key={question.id} className="question-card">
+            {(() => {
+              const questionType = normalizeQuestionType(question.questionType);
+              return (
+                <>
             <div className="question-header">
               <span className="question-number">Question {index + 1}</span>
               <span className="question-marks">{question.marks} marks</span>
@@ -193,7 +199,7 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
             
             <p className="question-text">{question.questionText}</p>
 
-            {question.questionType === 'MULTIPLE_CHOICE' && (
+            {questionType === 'MULTIPLE_CHOICE' && (
               <div className="options-list">
                 {['A', 'B', 'C', 'D'].map(option => (
                   <label key={option} className="option-label">
@@ -212,7 +218,7 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
               </div>
             )}
 
-            {question.questionType === 'TRUE_FALSE' && (
+            {questionType === 'TRUE_FALSE' && (
               <div className="options-list">
                 <label className="option-label">
                   <input
@@ -237,17 +243,17 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
               </div>
             )}
 
-            {(question.questionType === 'SHORT_ANSWER' || question.questionType === 'ESSAY') && (
+            {(questionType === 'SHORT_ANSWER' || questionType === 'ESSAY') && (
               <textarea
                 className="answer-textarea"
-                rows={question.questionType === 'ESSAY' ? 6 : 3}
+                rows={questionType === 'ESSAY' ? 6 : 3}
                 value={answers[question.id] || ''}
                 onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                 placeholder="Enter your answer here..."
               />
             )}
 
-            {question.questionType === 'CODING' && (
+            {questionType === 'CODING' && (
               <div className="coding-question-block">
                 <label>
                   Programming Language
@@ -292,6 +298,9 @@ const QuizTaker = ({ assessment, onComplete, onCancel }) => {
                 />
               </div>
             )}
+                </>
+              );
+            })()}
           </div>
         ))}
       </div>
