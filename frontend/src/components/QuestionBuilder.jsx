@@ -195,18 +195,30 @@ const QuestionBuilder = ({ assessmentId, assignmentId, onSuccess, onCancel }) =>
 
         {isTrueFalse && (
           <div className="form-group">
-            <label htmlFor="correctAnswer">Correct Answer *</label>
-            <select
-              id="correctAnswer"
-              name="correctAnswer"
-              value={formData.correctAnswer}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select...</option>
-              <option value="TRUE">True</option>
-              <option value="FALSE">False</option>
-            </select>
+            <label>Correct Answer *</label>
+            <div className="options-list">
+              <label className="option-label">
+                <input
+                  type="radio"
+                  name="correctAnswer"
+                  value="TRUE"
+                  checked={formData.correctAnswer === 'TRUE'}
+                  onChange={handleChange}
+                  required
+                />
+                <span className="option-text">True</span>
+              </label>
+              <label className="option-label">
+                <input
+                  type="radio"
+                  name="correctAnswer"
+                  value="FALSE"
+                  checked={formData.correctAnswer === 'FALSE'}
+                  onChange={handleChange}
+                />
+                <span className="option-text">False</span>
+              </label>
+            </div>
           </div>
         )}
 
