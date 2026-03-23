@@ -44,7 +44,18 @@ function App() {
       const data = isStudent ? await getMyEnrolledCourses() : await getCourses();
       setCourses(data);
     } catch (apiError) {
-      setError('Unable to load courses. Ensure backend is running.');
+      if (apiError.response?.status === 401) {
+        clearAuth();
+        setAuth(null);
+        setCourses([]);
+        setError('Session expired. Please login again.');
+        return;
+      }
+
+      const message = apiError.response?.data?.message
+        || (apiError.message === 'Network Error' ? 'Unable to reach server. Please try again shortly.' : null)
+        || 'Unable to load courses right now.';
+      setError(typeof message === 'string' ? message : 'Unable to load courses right now.');
     }
   };
 
