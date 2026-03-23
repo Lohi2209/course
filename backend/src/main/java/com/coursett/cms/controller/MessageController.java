@@ -41,8 +41,9 @@ public class MessageController {
         dto.put("body", m.getBody());
         dto.put("createdAt", m.getCreatedAt());
         dto.put("isRead", m.isRead());
-        dto.put("hasReplies", !m.getReplies().isEmpty());
-        dto.put("replyCount", m.getReplies().size());
+        long replyCount = messageRepository.countByParentId(m.getId());
+        dto.put("hasReplies", replyCount > 0);
+        dto.put("replyCount", replyCount);
 
         // sender info
         AppUser s = m.getSender();
@@ -68,10 +69,6 @@ public class MessageController {
             dto.put("courseCode", c.getCourseCode());
         }
 
-        // include replies if loaded
-        if (!m.getReplies().isEmpty()) {
-            dto.put("replies", m.getReplies().stream().map(this::toReplyDto).collect(Collectors.toList()));
-        }
         return dto;
     }
 
@@ -164,7 +161,13 @@ public class MessageController {
             msg.setRead(true);
             messageRepository.save(msg);
         }
-        return ResponseEntity.ok(toDto(msg));
+        Map<String, Object> dto = toDto(msg);
+        List<Message> replies = messageRepository.findByParentIdOrderByCreatedAtAsc(msg.getId());
+        dto.put("replies", replies.stream().map(this::toReplyDto).collect(Collectors.toList()));
+        dto.put("replyCount", replies.size());
+        dto.put("hasReplies", !replies.isEmpty());
+
+        return ResponseEntity.ok(dto);
     }
 
     // ── Unread Count ──────────────────────────────────────────────────────────
