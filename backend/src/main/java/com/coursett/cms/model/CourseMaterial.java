@@ -34,7 +34,7 @@ public class CourseMaterial {
     @Column(nullable = false, length = 500)
     private String url;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 

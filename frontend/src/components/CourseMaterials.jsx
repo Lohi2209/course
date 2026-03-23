@@ -23,10 +23,12 @@ function CourseMaterials({ course, canManage, canDelete, onClose }) {
   const loadMaterials = async () => {
     try {
       setLoading(true);
+      setError('');
       const data = await getMaterialsByCourse(course.id);
       setMaterials(data);
     } catch (err) {
-      setError('Failed to load materials');
+      const message = err.response?.data?.message || err.message || 'Failed to load materials';
+      setError(message);
     } finally {
       setLoading(false);
     }
