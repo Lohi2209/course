@@ -8,9 +8,13 @@ const isLocalFrontendHost =
 
 const defaultBaseUrl = isLocalFrontendHost ? LOCAL_API_BASE_URL : DEPLOYED_API_BASE_URL;
 const configuredBaseUrl = (envBaseUrl || defaultBaseUrl).replace(/\/$/, '');
+const normalizedApiRoot = configuredBaseUrl.endsWith('/api')
+  ? configuredBaseUrl
+  : `${configuredBaseUrl}/api`;
+const normalizedBaseUrl = normalizedApiRoot.replace(/\/api$/, '');
 
-export const API_BASE_URL = configuredBaseUrl;
-export const API_ROOT = `${API_BASE_URL}/api`;
+export const API_BASE_URL = normalizedBaseUrl;
+export const API_ROOT = normalizedApiRoot;
 
 export const toAbsoluteUrl = (path) => {
   const normalizedPath = String(path || '').replace(/^\/+/, '');

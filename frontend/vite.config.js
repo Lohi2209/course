@@ -5,5 +5,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5177
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'chart-vendor': ['recharts'],
+          'http-vendor': ['axios']
+        }
+      }
+    }
   }
 });

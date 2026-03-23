@@ -1,22 +1,25 @@
-import { useEffect, useState } from 'react';
-import CourseForm from './components/CourseForm';
-import CourseList from './components/CourseList';
-import Profile from './components/Profile';
-import CourseMaterials from './components/CourseMaterials';
-import CourseRegistration from './components/CourseRegistration';
-import MyEnrollments from './components/MyEnrollments';
-import EnrollmentApprovals from './components/EnrollmentApprovals';
-import AdminDashboard from './components/AdminDashboard';
-import FacultyDashboard from './components/FacultyDashboard';
-import StudentDashboard from './components/StudentDashboard';
-import AssignmentManager from './components/AssignmentManager';
-import Gradebook from './components/Gradebook';
-import AttendanceManager from './components/AttendanceManager';
-import StudentAttendance from './components/StudentAttendance';
-import MessagingCenter from './components/MessagingCenter';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { createCourse, deleteCourse, getCourses, updateCourse, getMyEnrolledCourses } from './api/courseApi';
 import AuthForm from './components/AuthForm';
 import { clearAuth, getAuth, login, register, saveAuth } from './api/authApi';
+
+const CourseForm = lazy(() => import('./components/CourseForm'));
+const CourseList = lazy(() => import('./components/CourseList'));
+const Profile = lazy(() => import('./components/Profile'));
+const CourseMaterials = lazy(() => import('./components/CourseMaterials'));
+const CourseRegistration = lazy(() => import('./components/CourseRegistration'));
+const MyEnrollments = lazy(() => import('./components/MyEnrollments'));
+const EnrollmentApprovals = lazy(() => import('./components/EnrollmentApprovals'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const FacultyDashboard = lazy(() => import('./components/FacultyDashboard'));
+const StudentDashboard = lazy(() => import('./components/StudentDashboard'));
+const AssignmentManager = lazy(() => import('./components/AssignmentManager'));
+const Gradebook = lazy(() => import('./components/Gradebook'));
+const AttendanceManager = lazy(() => import('./components/AttendanceManager'));
+const StudentAttendance = lazy(() => import('./components/StudentAttendance'));
+const MessagingCenter = lazy(() => import('./components/MessagingCenter'));
+
+const SectionLoader = () => <div className="info-message">Loading...</div>;
 
 function App() {
   const [courses, setCourses] = useState([]);
@@ -274,44 +277,50 @@ function App() {
       </div>
 
       {showRegistration && (
-        <CourseRegistration
-          onClose={() => {
-            setShowRegistration(false);
-            setActiveTab('courses');
-          }}
-        />
+        <Suspense fallback={<SectionLoader />}>
+          <CourseRegistration
+            onClose={() => {
+              setShowRegistration(false);
+              setActiveTab('courses');
+            }}
+          />
+        </Suspense>
       )}
 
       {showMyEnrollments && (
-        <MyEnrollments
-          onClose={() => {
-            setShowMyEnrollments(false);
-            setActiveTab('courses');
-          }}
-        />
+        <Suspense fallback={<SectionLoader />}>
+          <MyEnrollments
+            onClose={() => {
+              setShowMyEnrollments(false);
+              setActiveTab('courses');
+            }}
+          />
+        </Suspense>
       )}
 
       {showApprovals && (
-        <EnrollmentApprovals
-          onClose={() => {
-            setShowApprovals(false);
-            setActiveTab('courses');
-          }}
-        />
+        <Suspense fallback={<SectionLoader />}>
+          <EnrollmentApprovals
+            onClose={() => {
+              setShowApprovals(false);
+              setActiveTab('courses');
+            }}
+          />
+        </Suspense>
       )}
 
       {error && <div className="error-banner">{error}</div>}
 
       {activeTab === 'dashboard' && (
-        <>
+        <Suspense fallback={<SectionLoader />}>
           {(auth.role === 'ADMIN' || auth.role === 'HOD') && <AdminDashboard />}
           {auth.role === 'FACULTY' && <FacultyDashboard />}
           {auth.role === 'STUDENT' && <StudentDashboard />}
-        </>
+        </Suspense>
       )}
 
       {activeTab === 'courses' && (
-        <>
+        <Suspense fallback={<SectionLoader />}>
           {canCreate && (
             <CourseForm onSubmit={handleSubmit} editingCourse={editingCourse} onCancel={() => setEditingCourse(null)} />
           )}
@@ -330,28 +339,54 @@ function App() {
               canDelete={canDelete}
             />
           </section>
-        </>
+        </Suspense>
       )}
 
-      {activeTab === 'assignments' && <AssignmentManager />}
+      {activeTab === 'assignments' && (
+        <Suspense fallback={<SectionLoader />}>
+          <AssignmentManager />
+        </Suspense>
+      )}
 
-      {activeTab === 'gradebook' && <Gradebook />}
+      {activeTab === 'gradebook' && (
+        <Suspense fallback={<SectionLoader />}>
+          <Gradebook />
+        </Suspense>
+      )}
 
-      {activeTab === 'attendance' && <StudentAttendance />}
+      {activeTab === 'attendance' && (
+        <Suspense fallback={<SectionLoader />}>
+          <StudentAttendance />
+        </Suspense>
+      )}
 
-      {activeTab === 'attendanceManager' && <AttendanceManager />}
+      {activeTab === 'attendanceManager' && (
+        <Suspense fallback={<SectionLoader />}>
+          <AttendanceManager />
+        </Suspense>
+      )}
 
-      {activeTab === 'profile' && <Profile />}
+      {activeTab === 'profile' && (
+        <Suspense fallback={<SectionLoader />}>
+          <Profile />
+        </Suspense>
+      )}
 
-      {activeTab === 'messages' && <MessagingCenter />}
+      {activeTab === 'messages' && (
+        <Suspense fallback={<SectionLoader />}>
+          <MessagingCenter />
+        </Suspense>
+      )}
 
       {viewingMaterials && (
-        <CourseMaterials
-          course={viewingMaterials}
-          canManage={canCreate}
-          canDelete={canDelete}
-          onClose={() => setViewingMaterials(null)}
-        />
+        <Suspense fallback={<SectionLoader />}>
+          <CourseMaterials
+            course={viewingMaterials}
+            canManage={canCreate}
+            canDelete={canDelete}
+            onClose={() => setViewingMaterials(null)}
+          />
+        </Suspense>
       )}
     </div>
   );
