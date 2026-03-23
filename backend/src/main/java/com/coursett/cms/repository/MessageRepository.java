@@ -26,6 +26,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     /** All replies to a parent message */
     List<Message> findByParentIdOrderByCreatedAtAsc(Long parentId);
 
+       /** Reply count for a parent message */
+       long countByParentId(Long parentId);
+
     /** Inbox + course messages visible to a student (received OR course-wide) */
     @Query("SELECT m FROM Message m WHERE m.parent IS NULL AND " +
            "(m.recipient.id = :userId OR " +
