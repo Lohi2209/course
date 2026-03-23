@@ -1,5 +1,7 @@
 package com.coursett.cms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +14,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "courses")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Course {
 
     @Id
@@ -49,6 +52,7 @@ public class Course {
         joinColumns = @JoinColumn(name = "course_id"),
         inverseJoinColumns = @JoinColumn(name = "prerequisite_id")
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<Course> prerequisites = new HashSet<>();
 
     // Course Scheduling
