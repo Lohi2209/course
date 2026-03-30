@@ -30,6 +30,9 @@ public class Submission {
     
     @Column(name = "marks_obtained")
     private Integer marksObtained;
+
+    @Column(name = "auto_graded")
+    private Boolean autoGraded = false;
     
     @Column(name = "graded_at")
     private LocalDateTime gradedAt;
@@ -101,6 +104,14 @@ public class Submission {
     
     public void setMarksObtained(Integer marksObtained) {
         this.marksObtained = marksObtained;
+    }
+
+    public Boolean getAutoGraded() {
+        return autoGraded;
+    }
+
+    public void setAutoGraded(Boolean autoGraded) {
+        this.autoGraded = autoGraded;
     }
     
     public LocalDateTime getGradedAt() {

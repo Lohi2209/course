@@ -96,6 +96,9 @@ const GradingPanel = ({ assessmentId, assessmentTitle, totalMarks, onClose } ) =
   };
 
   const getStatusBadge = (attempt) => {
+    if (attempt.autoGraded) {
+      return <span className="badge badge-info">Auto-Graded</span>;
+    }
     if (attempt.status === 'GRADED' || (attempt.marksObtained !== null && attempt.marksObtained !== undefined)) {
       return <span className="badge badge-success">Graded</span>;
     }
@@ -166,7 +169,7 @@ const GradingPanel = ({ assessmentId, assessmentTitle, totalMarks, onClose } ) =
                             {answer.questionType !== 'SHORT_ANSWER' && answer.questionType !== 'ESSAY' && (
                               <p className="correct-answer">Correct Answer: {answer.correctAnswer}</p>
                             )}
-                            {answer.marks && <p className="marks">Marks: {answer.marks}</p>}
+                            {(answer.marks !== null && answer.marks !== undefined) && <p className="marks">Marks: {answer.marks}</p>}
                           </div>
                         ))}
                       </div>

@@ -78,6 +78,9 @@ const SubmissionViewer = ({ assignmentId, assignmentTitle, maxMarks, onClose }) 
 
   const getStatusBadge = (submission) => {
     if (submission.marksObtained !== null && submission.marksObtained !== undefined) {
+      if (submission.autoGraded) {
+        return <span className="badge badge-info">Auto-Graded</span>;
+      }
       return <span className="badge badge-success">Graded</span>;
     }
     return <span className="badge badge-warning">Pending</span>;
@@ -203,6 +206,11 @@ const SubmissionViewer = ({ assignmentId, assignmentTitle, maxMarks, onClose }) 
                     {submission.marksObtained !== null && submission.marksObtained !== undefined ? (
                       <div className="marks-display">
                         <strong>Marks:</strong> {submission.marksObtained} / {maxMarks}
+                        {submission.autoGraded && (
+                          <div className="feedback-display">
+                            <strong>Status:</strong> Auto-graded on submission
+                          </div>
+                        )}
                         {submission.feedback && (
                           <div className="feedback-display">
                             <strong>Feedback:</strong> {submission.feedback}

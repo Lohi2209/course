@@ -2,6 +2,8 @@ package com.coursett.cms.controller;
 
 import com.coursett.cms.model.*;
 import com.coursett.cms.repository.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,9 @@ public class AssignmentController {
     
     @Autowired
     private AppUserRepository userRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
     
     @GetMapping("/course/{courseId}")
     @PreAuthorize("isAuthenticated()")
@@ -201,6 +207,8 @@ public class AssignmentController {
                 fileUrl = request.get("submissionUrl");
             }
             submission.setFileUrl(fileUrl);
+
+            applyAutoGradingIfEligible(assignment, submission);
             
             Submission saved = submissionRepository.save(submission);
             return ResponseEntity.ok(saved);
@@ -241,11 +249,172 @@ public class AssignmentController {
             submission.setFeedback((String) request.get("feedback"));
             submission.setGradedAt(LocalDateTime.now());
             submission.setGradedBy(grader);
+            submission.setAutoGraded(false);
             
             Submission updated = submissionRepository.save(submission);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
+    }
+
+    private void applyAutoGradingIfEligible(Assignment assignment, Submission submission) {
+        if (assignment.getAssignmentType() == AssignmentType.WRITTEN) {
+            return;
+        }
+
+        List<Question> questions = questionRepository.findByAssignmentIdOrderByOrderAsc(assignment.getId());
+        if (questions.isEmpty()) {
+            return;
+        }
+
+        String submissionText = submission.getSubmissionText();
+        if (submissionText == null || submissionText.isBlank()) {
+            return;
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(submissionText);
+            JsonNode answersNode = root.path("answers");
+            if (!answersNode.isArray() || answersNode.isEmpty()) {
+                return;
+            }
+
+            Map<Long, JsonNode> answerByQuestionId = new LinkedHashMap<>();
+            for (JsonNode answerNode : answersNode) {
+                if (!answerNode.has("questionId")) {
+                    continue;
+                }
+                answerByQuestionId.put(answerNode.path("questionId").asLong(), answerNode);
+            }
+
+            double awardedMarks = 0.0;
+            int autoEvaluatedQuestions = 0;
+            int manualReviewQuestions = 0;
+
+            for (Question question : questions) {
+                JsonNode answerNode = answerByQuestionId.get(question.getId());
+                if (answerNode == null) {
+                    continue;
+                }
+
+                if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE || question.getQuestionType() == QuestionType.TRUE_FALSE) {
+                    autoEvaluatedQuestions++;
+                    String studentAnswer = answerNode.path("answer").asText("");
+                    if (isObjectiveAnswerCorrect(question, studentAnswer)) {
+                        awardedMarks += safeMarks(question);
+                    }
+                } else if (question.getQuestionType() == QuestionType.CODING) {
+                    autoEvaluatedQuestions++;
+                    String studentCode = answerNode.path("code").asText("");
+                    awardedMarks += evaluateCodingAnswer(question, studentCode);
+                } else {
+                    manualReviewQuestions++;
+                }
+            }
+
+            int roundedMarks = (int) Math.round(Math.min(awardedMarks, assignment.getMaxMarks()));
+            submission.setMarksObtained(roundedMarks);
+            submission.setGradedAt(LocalDateTime.now());
+            submission.setAutoGraded(true);
+            submission.setFeedback(buildAutoGradeFeedback(autoEvaluatedQuestions, manualReviewQuestions, roundedMarks, assignment.getMaxMarks()));
+        } catch (Exception ignored) {
+            // Keep submission accepted even if autograding payload is malformed.
+        }
+    }
+
+    private boolean isObjectiveAnswerCorrect(Question question, String studentAnswer) {
+        if (studentAnswer == null || studentAnswer.isBlank() || question.getCorrectAnswer() == null || question.getCorrectAnswer().isBlank()) {
+            return false;
+        }
+
+        String normalizedStudent = studentAnswer.trim();
+        String normalizedCorrect = question.getCorrectAnswer().trim();
+
+        if (normalizedStudent.equalsIgnoreCase(normalizedCorrect)) {
+            return true;
+        }
+
+        // Supports either letter-based answers (A/B/C/D) or full option text in correctAnswer.
+        if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
+            String optionFromStudent = optionValue(question, normalizedStudent);
+            String optionFromCorrect = optionValue(question, normalizedCorrect);
+
+            if (!optionFromStudent.isBlank() && optionFromStudent.equalsIgnoreCase(normalizedCorrect)) {
+                return true;
+            }
+            if (!optionFromCorrect.isBlank() && normalizedStudent.equalsIgnoreCase(optionFromCorrect)) {
+                return true;
+            }
+            if (!optionFromStudent.isBlank() && !optionFromCorrect.isBlank() && optionFromStudent.equalsIgnoreCase(optionFromCorrect)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private String optionValue(Question question, String keyOrValue) {
+        if (keyOrValue == null) {
+            return "";
+        }
+
+        return switch (keyOrValue.trim().toUpperCase()) {
+            case "A" -> question.getOptionA() == null ? "" : question.getOptionA().trim();
+            case "B" -> question.getOptionB() == null ? "" : question.getOptionB().trim();
+            case "C" -> question.getOptionC() == null ? "" : question.getOptionC().trim();
+            case "D" -> question.getOptionD() == null ? "" : question.getOptionD().trim();
+            default -> "";
+        };
+    }
+
+    private double evaluateCodingAnswer(Question question, String studentCode) {
+        if (studentCode == null || studentCode.isBlank()) {
+            return 0.0;
+        }
+
+        String expected = question.getExpectedOutput();
+        if (expected == null || expected.isBlank()) {
+            return 0.0;
+        }
+
+        String normalizedCode = studentCode.toLowerCase();
+        String normalizedExpected = expected.toLowerCase().trim();
+
+        if (normalizedCode.contains(normalizedExpected)) {
+            return safeMarks(question);
+        }
+
+        int hintLength = Math.min(8, normalizedExpected.length());
+        if (hintLength > 2 && normalizedCode.contains(normalizedExpected.substring(0, hintLength))) {
+            return safeMarks(question) * 0.4;
+        }
+
+        return 0.0;
+    }
+
+    private int safeMarks(Question question) {
+        return question.getMarks() == null ? 0 : Math.max(question.getMarks(), 0);
+    }
+
+    private String buildAutoGradeFeedback(int autoEvaluatedQuestions, int manualReviewQuestions, int marks, int totalMarks) {
+        StringBuilder feedback = new StringBuilder();
+        feedback.append("Auto-graded: ")
+                .append(marks)
+                .append("/")
+                .append(totalMarks)
+                .append(".");
+
+        feedback.append(" Auto-evaluated questions: ")
+                .append(autoEvaluatedQuestions)
+                .append(".");
+
+        if (manualReviewQuestions > 0) {
+            feedback.append(" Pending manual review questions: ")
+                    .append(manualReviewQuestions)
+                    .append(".");
+        }
+
+        return feedback.toString();
     }
 }

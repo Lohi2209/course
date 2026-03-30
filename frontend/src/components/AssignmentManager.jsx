@@ -250,13 +250,17 @@ const AssignmentManager = () => {
 
     try {
       setLoading(true);
-      await submitAssignment(submittingFor.id, payload);
+      const savedSubmission = await submitAssignment(submittingFor.id, payload);
       setSubmissionData({ submissionText: '', submissionUrl: '' });
       setQuestionAnswers({});
       setCodingLanguages({});
       setSubmittingFor(null);
       setError(null);
-      alert('Assignment submitted successfully!');
+      if (savedSubmission?.autoGraded && savedSubmission?.marksObtained !== undefined && savedSubmission?.marksObtained !== null) {
+        alert(`Assignment submitted and auto-graded: ${savedSubmission.marksObtained}/${submittingFor.maxMarks}`);
+      } else {
+        alert('Assignment submitted successfully!');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to submit assignment');
       console.error(err);

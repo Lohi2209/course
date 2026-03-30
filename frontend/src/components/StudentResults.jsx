@@ -48,6 +48,9 @@ const StudentResults = () => {
     if (!attempt.marksObtained && attempt.marksObtained !== 0) {
       return <span className="badge badge-info">Pending</span>;
     }
+    if (attempt.autoGraded) {
+      return <span className="badge badge-info">Auto-Graded</span>;
+    }
     if (attempt.marksObtained >= attempt.assessment?.passingMarks) {
       return <span className="badge badge-success">Passed</span>;
     }
@@ -119,6 +122,9 @@ const StudentResults = () => {
                 <div className="metadata-item">
                   <strong>Graded:</strong> {formatDateTime(selectedAttempt.gradedAt)}
                 </div>
+                <div className="metadata-item">
+                  <strong>Evaluation:</strong> {selectedAttempt.autoGraded ? 'Auto-graded' : 'Faculty graded'}
+                </div>
               </>
             )}
           </div>
@@ -140,7 +146,7 @@ const StudentResults = () => {
                       <h5>Question {idx + 1}</h5>
                       {answer.isCorrect === true && <span className="badge badge-success">✓ Correct</span>}
                       {answer.isCorrect === false && <span className="badge badge-danger">✗ Incorrect</span>}
-                      {answer.questionType === 'SHORT_ANSWER' || answer.questionType === 'ESSAY' && answer.isCorrect === null && (
+                      {((answer.questionType === 'SHORT_ANSWER' || answer.questionType === 'ESSAY') && answer.isCorrect === null) && (
                         <span className="badge badge-warning">Manual Grading</span>
                       )}
                     </div>
@@ -155,7 +161,7 @@ const StudentResults = () => {
                         <p><strong>Correct Answer:</strong> {answer.correctAnswer}</p>
                       </div>
                     )}
-                    {answer.marks && (
+                    {(answer.marks !== null && answer.marks !== undefined) && (
                       <p className="marks-awarded">Marks: {answer.marks}</p>
                     )}
                   </div>

@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -364,7 +366,155 @@ public class AssessmentController {
             return ResponseEntity.status(403).body(Map.of("message", "Forbidden"));
         }
 
-        return ResponseEntity.ok(attempt);
+        List<Question> questions = questionRepository.findByAssessmentIdOrderByOrderAsc(attempt.getAssessment().getId());
+        List<Map<String, Object>> answerDetails = new ArrayList<>();
+        double awardedTotal = 0.0;
+
+        for (Question question : questions) {
+            Map<String, Object> answer = new LinkedHashMap<>();
+            String storedAnswer = attempt.getAnswers() != null ? attempt.getAnswers().get(question.getId()) : null;
+
+            answer.put("questionId", question.getId());
+            answer.put("questionText", question.getQuestionText());
+            answer.put("questionType", question.getQuestionType().toString());
+            answer.put("correctAnswer", question.getCorrectAnswer());
+            answer.put("maxMarks", question.getMarks());
+
+            String normalizedStudentAnswer = normalizeAttemptAnswer(question, storedAnswer);
+            answer.put("studentAnswer", normalizedStudentAnswer);
+
+            Double marksAwarded = null;
+            Boolean isCorrect = null;
+
+            if (normalizedStudentAnswer != null && !normalizedStudentAnswer.isBlank()) {
+                if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE || question.getQuestionType() == QuestionType.TRUE_FALSE) {
+                    isCorrect = isObjectiveAnswerCorrect(question, normalizedStudentAnswer);
+                    marksAwarded = isCorrect ? question.getMarks().doubleValue() : 0.0;
+                } else if (question.getQuestionType() == QuestionType.CODING) {
+                    marksAwarded = evaluateCodingAnswerSkeleton(question, normalizedStudentAnswer);
+                    isCorrect = marksAwarded >= question.getMarks();
+                }
+            } else if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE ||
+                    question.getQuestionType() == QuestionType.TRUE_FALSE ||
+                    question.getQuestionType() == QuestionType.CODING) {
+                marksAwarded = 0.0;
+                isCorrect = false;
+            }
+
+            if (marksAwarded != null) {
+                awardedTotal += marksAwarded;
+            }
+
+            answer.put("isCorrect", isCorrect);
+            answer.put("marks", marksAwarded != null ? marksAwarded : null);
+            answerDetails.add(answer);
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("id", attempt.getId());
+        response.put("assessment", attempt.getAssessment());
+        response.put("student", attempt.getStudent());
+        response.put("startedAt", attempt.getStartedAt());
+        response.put("submittedAt", attempt.getSubmittedAt());
+        response.put("marksObtained", attempt.getMarksObtained());
+        response.put("autoGraded", attempt.getAutoGraded());
+        response.put("gradedAt", attempt.getGradedAt());
+        response.put("gradedBy", attempt.getGradedBy());
+        response.put("feedback", attempt.getFeedback());
+        response.put("answers", answerDetails);
+        response.put("autoCalculatedMarks", Math.round(awardedTotal * 100.0) / 100.0);
+
+        return ResponseEntity.ok(response);
+    }
+
+    private String normalizeAttemptAnswer(Question question, String storedAnswer) {
+        if (storedAnswer == null) {
+            return null;
+        }
+
+        String trimmed = storedAnswer.trim();
+        if (trimmed.isEmpty()) {
+            return "";
+        }
+
+        if (question.getQuestionType() != QuestionType.CODING) {
+            return trimmed;
+        }
+
+        if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+            try {
+                int codeKeyIndex = trimmed.indexOf("\"code\"");
+                if (codeKeyIndex >= 0) {
+                    int colonIndex = trimmed.indexOf(':', codeKeyIndex);
+                    int firstQuote = trimmed.indexOf('"', colonIndex + 1);
+                    if (firstQuote >= 0) {
+                        StringBuilder parsed = new StringBuilder();
+                        boolean escape = false;
+                        for (int i = firstQuote + 1; i < trimmed.length(); i++) {
+                            char ch = trimmed.charAt(i);
+                            if (escape) {
+                                parsed.append(ch == 'n' ? '\n' : ch);
+                                escape = false;
+                            } else if (ch == '\\') {
+                                escape = true;
+                            } else if (ch == '"') {
+                                break;
+                            } else {
+                                parsed.append(ch);
+                            }
+                        }
+                        return parsed.toString().trim();
+                    }
+                }
+            } catch (Exception ignored) {
+                // Fall back to the raw value.
+            }
+        }
+
+        return trimmed;
+    }
+
+    private boolean isObjectiveAnswerCorrect(Question question, String studentAnswer) {
+        if (studentAnswer == null || studentAnswer.isBlank() || question.getCorrectAnswer() == null) {
+            return false;
+        }
+
+        String normalizedStudent = studentAnswer.trim();
+        String normalizedCorrect = question.getCorrectAnswer().trim();
+        if (normalizedStudent.equalsIgnoreCase(normalizedCorrect)) {
+            return true;
+        }
+
+        if (question.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
+            String studentOptionText = optionTextByKey(question, normalizedStudent);
+            String correctOptionText = optionTextByKey(question, normalizedCorrect);
+
+            if (!studentOptionText.isBlank() && studentOptionText.equalsIgnoreCase(normalizedCorrect)) {
+                return true;
+            }
+            if (!correctOptionText.isBlank() && normalizedStudent.equalsIgnoreCase(correctOptionText)) {
+                return true;
+            }
+            if (!studentOptionText.isBlank() && !correctOptionText.isBlank() && studentOptionText.equalsIgnoreCase(correctOptionText)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private String optionTextByKey(Question question, String key) {
+        if (key == null) {
+            return "";
+        }
+
+        return switch (key.trim().toUpperCase()) {
+            case "A" -> question.getOptionA() == null ? "" : question.getOptionA().trim();
+            case "B" -> question.getOptionB() == null ? "" : question.getOptionB().trim();
+            case "C" -> question.getOptionC() == null ? "" : question.getOptionC().trim();
+            case "D" -> question.getOptionD() == null ? "" : question.getOptionD().trim();
+            default -> "";
+        };
     }
     
     @PutMapping("/attempts/{attemptId}/grade")
