@@ -1,5 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 :root {
-  font-family: Arial, sans-serif;
+  font-family: 'Manrope', 'Segoe UI', Tahoma, sans-serif;
+  --bg: #f6f7f2;
+  --bg-accent: #fdfcf7;
+  --surface: #ffffff;
+  --surface-soft: #fbfbf8;
+  --text: #2d3033;
+  --muted: #636d72;
+  --primary: #2f9e9b;
+  --primary-strong: #247f7d;
+  --primary-soft: #d9f2f1;
+  --secondary: #e69a2e;
+  --secondary-soft: #fff0d8;
+  --danger: #cf5a48;
+  --danger-soft: #fde5e1;
+  --border: #dce4dd;
+  --shadow: 0 14px 30px rgba(68, 88, 79, 0.12);
 }
 
 * {
@@ -8,14 +25,31 @@
 
 body {
   margin: 0;
-  background: #f5f7fb;
-  color: #1f2937;
+  background:
+    radial-gradient(circle at 10% -10%, #deefef 0%, rgba(222, 239, 239, 0) 35%),
+    radial-gradient(circle at 90% 0%, #fdf0dc 0%, rgba(253, 240, 220, 0) 30%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'Manrope', 'Segoe UI', Tahoma, sans-serif;
+  line-height: 1.45;
 }
 
 .container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 24px;
+  animation: containerFade 0.35s ease-out;
+}
+
+@keyframes containerFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-wrapper {
@@ -1900,5 +1934,343 @@ button.danger:hover:not(:disabled) {
 
   .form-actions button {
     width: 100%;
+  }
+}
+
+/* Friendly UI Theme Overrides */
+body .course-form,
+body .course-card,
+body .profile-container,
+body .attendance-section,
+body .users-section,
+body .chart-section,
+body .section,
+body .summary-card,
+body .chart-container,
+body .grades-table-section,
+body .file-upload-container,
+body .material-card,
+body .assignment-card,
+body .assessment-card,
+body .question-card,
+body .quiz-start,
+body .quiz-taker,
+body .result-card,
+body .result-detail-card,
+body .thread-panel,
+body .assignment-form,
+body .assessment-form,
+body .submission-form,
+body .question-builder,
+body .modal-content,
+body .materials-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+body h1,
+body h2,
+body h3,
+body h4 {
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+body p,
+body .course-description,
+body .course-name-small,
+body .text-muted,
+body .msg-preview,
+body .student-email,
+body .course-info,
+body .date-info small {
+  color: var(--muted);
+}
+
+body input,
+body textarea,
+body select,
+body .course-select,
+body .answer-textarea,
+body .reply-form textarea,
+body .file-upload-container .form-group input,
+body .file-upload-container .form-group textarea {
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  border-radius: 10px;
+  color: var(--text);
+}
+
+body input:focus,
+body textarea:focus,
+body select:focus,
+body .course-select:focus,
+body .reply-form textarea:focus,
+body .file-upload-container .form-group input:focus,
+body .file-upload-container .form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(217, 119, 43, 0.17);
+}
+
+body button,
+body .btn,
+body .btn-primary,
+body .btn-success,
+body button.success,
+body .compose-btn {
+  background: linear-gradient(180deg, #dd8744 0%, var(--primary) 100%);
+  color: #ffffff;
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+body button:hover:not(:disabled),
+body .btn:hover:not(:disabled),
+body .btn-primary:hover:not(:disabled),
+body .btn-success:hover:not(:disabled),
+body button.success:hover:not(:disabled),
+body .compose-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-strong) 100%);
+  box-shadow: 0 10px 20px rgba(185, 95, 31, 0.22);
+  transform: translateY(-1px);
+}
+
+body .btn-secondary,
+body button.secondary,
+body .student-results .btn-secondary,
+body .btn-info,
+body .btn-icon,
+body .btn-sm {
+  background: var(--secondary-soft);
+  color: var(--secondary);
+  border: 1px solid rgba(47, 122, 109, 0.26);
+}
+
+body .btn-secondary:hover:not(:disabled),
+body button.secondary:hover:not(:disabled),
+body .student-results .btn-secondary:hover,
+body .btn-info:hover:not(:disabled),
+body .btn-icon:hover,
+body .btn-sm:hover:not(:disabled) {
+  background: #ccece4;
+  color: #215f55;
+  box-shadow: none;
+}
+
+body .btn-danger,
+body button.danger,
+body .btn-icon-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid rgba(194, 79, 57, 0.35);
+}
+
+body .btn-danger:hover:not(:disabled),
+body button.danger:hover:not(:disabled),
+body .btn-icon-danger:hover {
+  background: #f9d4cb;
+  color: #9f3825;
+}
+
+body .nav-tabs,
+body .dashboard-tabs,
+body .msg-tabs {
+  border-bottom: 2px solid var(--border);
+  gap: 10px;
+}
+
+body .nav-tabs button,
+body .dashboard-tabs button,
+body .msg-tabs button {
+  color: var(--muted);
+  border-radius: 10px 10px 0 0;
+}
+
+body .nav-tabs button.active,
+body .dashboard-tabs button.active,
+body .msg-tabs button.active {
+  color: var(--primary-strong);
+  border-bottom-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+body .nav-tabs button:hover,
+body .dashboard-tabs button:hover,
+body .msg-tabs button:hover:not(.active) {
+  color: var(--primary-strong);
+  background: #fff2e3;
+}
+
+body .error-banner,
+body .error-message {
+  background: var(--danger-soft);
+  color: #8f2f1f;
+  border-color: #f3b4a6;
+}
+
+body .success-banner,
+body .success-message {
+  background: var(--secondary-soft);
+  color: #225f54;
+  border-color: #bde5db;
+}
+
+body .info-message,
+body .loading,
+body .no-materials,
+body .empty-msg,
+body .no-pending {
+  background: #fff8ee;
+  color: #826240;
+  border: 1px solid #f0d7b7;
+  border-radius: 10px;
+}
+
+body .assignment-details,
+body .assessment-details,
+body .assessment-info,
+body .assessment-info-box,
+body .assignment-info,
+body .attempt-details,
+body .marks-section,
+body .attempt-metadata,
+body .submission-metadata,
+body .thread-message.original,
+body .reply-form,
+body .material-form,
+body .course-selector-section,
+body .detail-item,
+body .deadline-card,
+body .student-question-item,
+body .submission-text,
+body .marks-display,
+body .student-answer,
+body .instructions {
+  background: var(--bg-accent);
+  border-color: var(--border);
+}
+
+body .card-header {
+  background: linear-gradient(135deg, #efb47a 0%, #dc8f42 100%);
+  color: #2f1f10;
+}
+
+body .course-code,
+body .material-type,
+body .question-marks,
+body .course-badge,
+body .badge-info,
+body .badge-primary,
+body .role-badge.role-student {
+  background: #ffedd8;
+  color: #8d4f1d;
+}
+
+body .badge-success,
+body .status-badge.approved,
+body .role-badge.role-faculty,
+body .role-faculty {
+  background: #daf0e8;
+  color: #1f6257;
+}
+
+body .badge-warning,
+body .status-badge.pending,
+body .role-badge.role-hod,
+body .role-hod {
+  background: #ffeccd;
+  color: #8c551e;
+}
+
+body .badge-danger,
+body .status-badge.rejected,
+body .role-badge.role-admin,
+body .role-admin {
+  background: #fbded8;
+  color: #8f3727;
+}
+
+body .file-upload-area {
+  border-color: #e8caa1;
+  background: #fff9f1;
+}
+
+body .file-upload-area:hover,
+body .file-upload-area.drag-over {
+  border-color: var(--primary);
+  background: #ffefdf;
+}
+
+body .msg-row {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+body .msg-row:hover {
+  background: #fff4e7;
+  border-color: #e9bb88;
+}
+
+body .msg-row.msg-unread {
+  border-left-color: var(--primary);
+  background: #fff7ec;
+}
+
+body .thread-message.reply.mine {
+  background: #fff1e1;
+  border-left-color: var(--primary);
+}
+
+body .thread-message.reply.theirs {
+  background: #ecf8f5;
+  border-left-color: var(--secondary);
+}
+
+body .unread-badge {
+  background: var(--danger);
+}
+
+body .close-btn,
+body .close-button {
+  color: var(--muted);
+}
+
+body .close-btn:hover,
+body .close-button:hover {
+  background: #f4ece0;
+  color: var(--text);
+}
+
+body .stat-number,
+body .grade-value,
+body .marks-number,
+body .percentage,
+body .percentage-value,
+body .question-number,
+body .stat-action,
+body .users-table strong,
+body .material-link {
+  color: var(--primary-strong);
+}
+
+@media (max-width: 768px) {
+  body .container {
+    padding: 14px;
+  }
+
+  body .nav-tabs,
+  body .dashboard-tabs,
+  body .msg-tabs {
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  body .modal-content.large-modal,
+  body .materials-modal {
+    width: 96%;
+    padding: 18px;
   }
 }
