@@ -2,8 +2,8 @@
 
 :root {
   font-family: 'Manrope', 'Segoe UI', Tahoma, sans-serif;
-  --bg: #f6f7f2;
-  --bg-accent: #fdfcf7;
+  --bg: #ece7f6;
+  --bg-accent: #f4effd;
   --surface: #ffffff;
   --surface-soft: #fbfbf8;
   --text: #2d3033;
@@ -26,8 +26,8 @@
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 10% -10%, #deefef 0%, rgba(222, 239, 239, 0) 35%),
-    radial-gradient(circle at 90% 0%, #fdf0dc 0%, rgba(253, 240, 220, 0) 30%),
+    radial-gradient(circle at 12% -8%, #d8c9f2 0%, rgba(216, 201, 242, 0) 36%),
+    radial-gradient(circle at 88% 0%, #e6dbfa 0%, rgba(230, 219, 250, 0) 32%),
     var(--bg);
   color: var(--text);
   font-family: 'Manrope', 'Segoe UI', Tahoma, sans-serif;
@@ -2744,53 +2744,69 @@ body .modal-header {
   }
 }
 
-/* Requested Palette Updates: Login Blue, Profile Bold, Results Lavender */
+/* Requested Palette Updates: Login Purple, Profile Bold, Results Lavender */
 body .auth-card {
-  border: 1px solid #b8d4ff;
-  box-shadow: 0 18px 40px rgba(22, 70, 145, 0.22);
+  border: 1px solid #d6c4ff;
+  box-shadow: 0 18px 40px rgba(76, 47, 145, 0.24);
   background:
-    radial-gradient(circle at 90% -10%, rgba(64, 132, 255, 0.22), rgba(64, 132, 255, 0) 45%),
-    radial-gradient(circle at 0% 100%, rgba(16, 82, 214, 0.26), rgba(16, 82, 214, 0) 46%),
-    linear-gradient(160deg, #eaf3ff 0%, #f7fbff 42%, #ffffff 100%);
+    radial-gradient(circle at 90% -10%, rgba(151, 101, 245, 0.24), rgba(151, 101, 245, 0) 45%),
+    radial-gradient(circle at 0% 100%, rgba(101, 61, 197, 0.24), rgba(101, 61, 197, 0) 46%),
+    linear-gradient(160deg, #f1e9ff 0%, #f8f3ff 42%, #ffffff 100%);
 }
 
 body .auth-title {
-  color: #103a82;
+  color: #43207b;
 }
 
 body .auth-subtitle {
-  color: #335c9a;
+  color: #6b53a3;
 }
 
 body .auth-card label {
-  color: #123b7a;
+  color: #4f2f87;
 }
 
 body .auth-card input,
 body .auth-card select,
 body .auth-card textarea {
-  border: 1px solid #c3d9ff;
-  background: #f4f8ff;
+  border: 1px solid #d8c6ff;
+  background: #f8f3ff;
 }
 
 body .auth-card input:focus,
 body .auth-card select:focus,
 body .auth-card textarea:focus {
-  border-color: #2f74f7;
-  box-shadow: 0 0 0 3px rgba(47, 116, 247, 0.18);
+  border-color: #7d4fe0;
+  box-shadow: 0 0 0 3px rgba(125, 79, 224, 0.2);
 }
 
 body .auth-card button,
 body .auth-card .btn,
 body .auth-card .form-actions button:not(.secondary) {
-  background: linear-gradient(180deg, #4f8eff 0%, #2f74f7 100%);
+  background: linear-gradient(180deg, #9362ef 0%, #7446d8 100%);
+  color: #ffffff;
 }
 
 body .auth-card button:hover:not(:disabled),
 body .auth-card .btn:hover:not(:disabled),
 body .auth-card .form-actions button:not(.secondary):hover:not(:disabled) {
-  background: linear-gradient(180deg, #3f83ff 0%, #1f62df 100%);
-  box-shadow: 0 10px 20px rgba(28, 91, 207, 0.28);
+  background: linear-gradient(180deg, #8755ea 0%, #6638c9 100%);
+  box-shadow: 0 10px 20px rgba(93, 58, 175, 0.3);
+}
+
+body .auth-card button.secondary,
+body .auth-card .form-actions button.secondary,
+body .auth-card .password-input-wrap button.secondary {
+  background: linear-gradient(180deg, #9b71ef 0%, #7a52d9 100%);
+  border: 1px solid #845cde;
+  color: #ffffff;
+}
+
+body .auth-card button.secondary:hover:not(:disabled),
+body .auth-card .form-actions button.secondary:hover:not(:disabled),
+body .auth-card .password-input-wrap button.secondary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #8d61e9 0%, #6a43cd 100%);
+  color: #ffffff;
 }
 
 body .profile-container {
