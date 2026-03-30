@@ -33,8 +33,11 @@ function AuthForm({ onAuthSuccess }) {
 
   return (
     <div className="auth-wrapper">
-      <form className="course-form" onSubmit={handleSubmit}>
-        <h2>{isLogin ? 'Login' : 'Register'}</h2>
+      <form className="course-form auth-card" onSubmit={handleSubmit}>
+        <h2 className="auth-title">{isLogin ? '🔐 Welcome Back' : '✨ Create Account'}</h2>
+        <p className="auth-subtitle">
+          {isLogin ? 'Sign in to continue your learning journey.' : 'Register to get started with your courses and dashboards.'}
+        </p>
 
         {error && <div className="error-banner">{error}</div>}
 
@@ -111,7 +114,7 @@ function AuthForm({ onAuthSuccess }) {
 
         <div className="form-actions">
           <button type="submit" disabled={submitting}>
-            {submitting ? 'Please wait...' : (isLogin ? 'Login' : 'Register')}
+            {submitting ? 'Please wait...' : (isLogin ? '🚀 Login' : '🆕 Register')}
           </button>
           <button
             type="button"

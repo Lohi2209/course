@@ -26,7 +26,7 @@ function StudentAttendance() {
 
   return (
     <section className="attendance-section">
-      <h2>My Attendance</h2>
+      <h2>📅 My Attendance</h2>
       <p>Track your attendance percentage and complete attendance history.</p>
 
       {error && <div className="error-banner">{error}</div>}

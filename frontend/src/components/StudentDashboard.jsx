@@ -45,7 +45,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="student-dashboard">
-      <h2>Student Dashboard</h2>
+      <h2>🎯 Student Dashboard</h2>
       
       <div className="stats-grid">
         <div className="stat-card">

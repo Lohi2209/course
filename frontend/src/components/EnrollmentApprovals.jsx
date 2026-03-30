@@ -72,7 +72,7 @@ function EnrollmentApprovals({ onClose }) {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content approval-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Enrollment Approvals</h2>
+                    <h2>✅ Enrollment Approvals</h2>
                     <button className="close-button" onClick={onClose}>&times;</button>
                 </div>
 

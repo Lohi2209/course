@@ -280,7 +280,7 @@ const AssignmentManager = () => {
 
   return (
     <div className="assignment-manager">
-      <h2>Assignments</h2>
+      <h2>📝 Assignments</h2>
 
       {error && <div className="error-message">{error}</div>}
 

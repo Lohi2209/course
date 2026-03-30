@@ -46,7 +46,7 @@ function CourseRegistration({ onClose }) {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content registration-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Course Registration</h2>
+                    <h2>🎓 Course Registration</h2>
                     <button className="close-button" onClick={onClose}>&times;</button>
                 </div>
 

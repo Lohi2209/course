@@ -94,7 +94,7 @@ function Profile() {
 
   return (
     <div className="profile-container">
-      <h2>My Profile</h2>
+      <h2>👤 My Profile</h2>
 
       {error && <div className="error-banner">{error}</div>}
       {success && <div className="success-banner">{success}</div>}

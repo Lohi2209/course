@@ -148,7 +148,7 @@ function App() {
   if (!auth?.token) {
     return (
       <div className="container">
-        <header>
+        <header className="site-hero">
           <h1>Course Management System</h1>
           <p>Sign in to access secure course management operations.</p>
         </header>
@@ -159,7 +159,7 @@ function App() {
 
   return (
     <div className="container">
-      <header>
+      <header className="site-hero">
         <h1>Course Management System</h1>
         <p>
           Logged in as <strong>{auth.username}</strong> ({auth.role})
@@ -177,7 +177,7 @@ function App() {
             setError('');
           }}
         >
-          Dashboard
+          📊 Overview
         </button>
         <button
           className={activeTab === 'courses' ? 'active' : ''}
@@ -186,7 +186,7 @@ function App() {
             setError('');
           }}
         >
-          Courses
+          📚 Courses
         </button>
         <button
           className={activeTab === 'assignments' ? 'active' : ''}
@@ -195,7 +195,7 @@ function App() {
             setError('');
           }}
         >
-          Assignments
+          📝 Assignments
         </button>
         {isStudent && (
           <button
@@ -205,7 +205,7 @@ function App() {
               setError('');
             }}
           >
-            My Gradebook
+            📈 Results
           </button>
         )}
         {isStudent && (
@@ -216,7 +216,7 @@ function App() {
               setError('');
             }}
           >
-            My Attendance
+            🕒 Attendance
           </button>
         )}
         {!isStudent && (
@@ -227,7 +227,7 @@ function App() {
               setError('');
             }}
           >
-            Attendance Manager
+            ✅ Attendance Hub
           </button>
         )}
         {isStudent && (
@@ -240,7 +240,7 @@ function App() {
                 setError('');
               }}
             >
-              Register for Courses
+              🎓 Enroll Courses
             </button>
             <button
               className={activeTab === 'enrollments' ? 'active' : ''}
@@ -250,7 +250,7 @@ function App() {
                 setError('');
               }}
             >
-              My Enrollments
+              📄 Enrollments
             </button>
           </>
         )}
@@ -263,7 +263,7 @@ function App() {
               setError('');
             }}
           >
-            Enrollment Approvals
+            ✔ Approvals
           </button>
         )}
         <button
@@ -274,7 +274,7 @@ function App() {
             setEditingCourse(null);
           }}
         >
-          My Profile
+          👤 Profile
         </button>
         <button
           className={activeTab === 'messages' ? 'active' : ''}
@@ -283,7 +283,7 @@ function App() {
             setError('');
           }}
         >
-          Messages
+          💬 Messages
         </button>
       </div>
 

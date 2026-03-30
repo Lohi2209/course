@@ -153,7 +153,7 @@ function AttendanceManager() {
 
   return (
     <section className="attendance-section">
-      <h2>Attendance Manager</h2>
+      <h2>🗓 Attendance Manager</h2>
       <p>Track and maintain professional attendance records per course and date.</p>
 
       {error && <div className="error-banner">{error}</div>}

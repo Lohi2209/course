@@ -44,7 +44,7 @@ const FacultyDashboard = () => {
 
   return (
     <div className="faculty-dashboard">
-      <h2>Faculty Dashboard</h2>
+      <h2>🏫 Faculty Dashboard</h2>
       
       <div className="stats-grid">
         <div className="stat-card">
