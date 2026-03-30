@@ -2274,3 +2274,218 @@ body .material-link {
     padding: 18px;
   }
 }
+
+/* Professional Visual Upgrade */
+body .container {
+  max-width: 1140px;
+  padding-top: 20px;
+}
+
+body .container > header {
+  background:
+    radial-gradient(circle at 90% 20%, rgba(47, 158, 155, 0.18), rgba(47, 158, 155, 0) 44%),
+    radial-gradient(circle at 10% 80%, rgba(230, 154, 46, 0.2), rgba(230, 154, 46, 0) 35%),
+    #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(41, 70, 60, 0.14);
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+body .container > header::after {
+  content: '';
+  position: absolute;
+  right: -70px;
+  top: -70px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(47, 158, 155, 0.16), rgba(230, 154, 46, 0.2));
+  filter: blur(2px);
+}
+
+body .container > header h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+  color: #173b3a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+body .container > header h1::after {
+  content: '';
+  display: block;
+  width: 88px;
+  height: 5px;
+  border-radius: 999px;
+  margin-top: 10px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+body .container > header p {
+  margin: 10px 0 0;
+  color: #405a5a;
+  font-weight: 500;
+}
+
+body .container > header p strong {
+  color: var(--primary-strong);
+  font-weight: 800;
+}
+
+body .nav-tabs {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 18px rgba(54, 74, 64, 0.08);
+}
+
+body .nav-tabs button {
+  border-radius: 10px;
+  border-bottom: none;
+  margin-bottom: 0;
+  font-weight: 700;
+}
+
+body .nav-tabs button.active {
+  background: linear-gradient(135deg, #d9f2f1 0%, #fff0d8 100%);
+  border: 1px solid #cce4db;
+  color: #1f6462;
+}
+
+body .nav-tabs button:hover {
+  background: #f2faf9;
+}
+
+body .course-form,
+body .assignment-form,
+body .assessment-form,
+body .submission-form,
+body .question-builder,
+body .course-card,
+body .result-card,
+body .material-card,
+body .summary-card,
+body .stat-card,
+body .users-section,
+body .chart-section,
+body .section,
+body .grades-table-section,
+body .profile-container,
+body .thread-panel,
+body .assignment-manager,
+body .assessment-manager,
+body .student-results,
+body .messaging-center {
+  border-radius: 16px;
+}
+
+body .course-card,
+body .assignment-card,
+body .assessment-card,
+body .result-card,
+body .material-card,
+body .stat-card,
+body .deadline-card,
+body .msg-row,
+body .attempt-item,
+body .submission-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+body .course-card:hover,
+body .assignment-card:hover,
+body .assessment-card:hover,
+body .result-card:hover,
+body .material-card:hover,
+body .stat-card:hover,
+body .deadline-card:hover,
+body .msg-row:hover,
+body .attempt-item:hover,
+body .submission-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(51, 76, 68, 0.14);
+  border-color: #cdded8;
+}
+
+body button,
+body .btn {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+body .form-actions,
+body .assignment-actions,
+body .assessment-actions,
+body .card-actions,
+body .action-buttons {
+  gap: 10px;
+}
+
+body .stat-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fcfffd 100%);
+}
+
+body .stat-card.alert {
+  background: linear-gradient(180deg, #fff9ee 0%, #fff3de 100%);
+  border-color: #f1d3a0;
+}
+
+body .users-table thead,
+body .grades-table th,
+body .enrollments-table th,
+body .approvals-table th,
+body .attendance-table th {
+  background: #f7fbf8;
+}
+
+body .materials-overlay,
+body .grading-panel-modal,
+body .submission-viewer-modal,
+body .modal-overlay {
+  backdrop-filter: blur(3px);
+}
+
+body .modal-content,
+body .materials-modal,
+body .thread-panel {
+  border-radius: 16px;
+}
+
+body .badge,
+body .status-badge,
+body .role-badge {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+body .loading::after {
+  border-top-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  body .container > header {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  body .container > header h1 {
+    font-size: clamp(1.5rem, 8vw, 2rem);
+  }
+
+  body .container > header h1::after {
+    width: 72px;
+    height: 4px;
+  }
+
+  body .nav-tabs {
+    padding: 6px;
+  }
+}
