@@ -2743,3 +2743,141 @@ body .modal-header {
     width: 100%;
   }
 }
+
+/* Requested Palette Updates: Login Blue, Profile Bold, Results Lavender */
+body .auth-card {
+  border: 1px solid #b8d4ff;
+  box-shadow: 0 18px 40px rgba(22, 70, 145, 0.22);
+  background:
+    radial-gradient(circle at 90% -10%, rgba(64, 132, 255, 0.22), rgba(64, 132, 255, 0) 45%),
+    radial-gradient(circle at 0% 100%, rgba(16, 82, 214, 0.26), rgba(16, 82, 214, 0) 46%),
+    linear-gradient(160deg, #eaf3ff 0%, #f7fbff 42%, #ffffff 100%);
+}
+
+body .auth-title {
+  color: #103a82;
+}
+
+body .auth-subtitle {
+  color: #335c9a;
+}
+
+body .auth-card label {
+  color: #123b7a;
+}
+
+body .auth-card input,
+body .auth-card select,
+body .auth-card textarea {
+  border: 1px solid #c3d9ff;
+  background: #f4f8ff;
+}
+
+body .auth-card input:focus,
+body .auth-card select:focus,
+body .auth-card textarea:focus {
+  border-color: #2f74f7;
+  box-shadow: 0 0 0 3px rgba(47, 116, 247, 0.18);
+}
+
+body .auth-card button,
+body .auth-card .btn,
+body .auth-card .form-actions button:not(.secondary) {
+  background: linear-gradient(180deg, #4f8eff 0%, #2f74f7 100%);
+}
+
+body .auth-card button:hover:not(:disabled),
+body .auth-card .btn:hover:not(:disabled),
+body .auth-card .form-actions button:not(.secondary):hover:not(:disabled) {
+  background: linear-gradient(180deg, #3f83ff 0%, #1f62df 100%);
+  box-shadow: 0 10px 20px rgba(28, 91, 207, 0.28);
+}
+
+body .profile-container {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(250, 198, 93, 0.22), rgba(250, 198, 93, 0) 35%),
+    radial-gradient(circle at 10% 90%, rgba(50, 154, 151, 0.24), rgba(50, 154, 151, 0) 40%),
+    linear-gradient(165deg, #133f4d 0%, #1d5d69 46%, #24787c 100%);
+  border: 1px solid #2e7d8a;
+  box-shadow: 0 18px 36px rgba(24, 73, 82, 0.28);
+}
+
+body .profile-container h2,
+body .profile-container .profile-field label,
+body .profile-container .profile-field span,
+body .profile-container .course-form label {
+  color: #effdff;
+}
+
+body .profile-container .profile-field {
+  border-bottom-color: rgba(230, 250, 255, 0.28);
+}
+
+body .profile-container input,
+body .profile-container select,
+body .profile-container textarea {
+  background: rgba(244, 254, 255, 0.95);
+  border: 1px solid rgba(185, 235, 243, 0.95);
+  color: #15373d;
+}
+
+body .student-results,
+body .result-detail-card {
+  background:
+    radial-gradient(circle at 92% 14%, rgba(201, 179, 255, 0.25), rgba(201, 179, 255, 0) 36%),
+    radial-gradient(circle at 8% 88%, rgba(166, 149, 226, 0.2), rgba(166, 149, 226, 0) 34%),
+    linear-gradient(165deg, #f6f0ff 0%, #f7f3ff 55%, #faf8ff 100%);
+  border: 1px solid #dfd2ff;
+}
+
+body .student-results h1,
+body .student-results h2,
+body .student-results h3,
+body .student-results .course-info,
+body .student-results .info-row strong,
+body .student-results .info-row span {
+  color: #4a3e72;
+}
+
+body .student-results .result-card,
+body .student-results .assessment-info,
+body .student-results .marks-section,
+body .student-results .result-detail-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f5ff 100%);
+  border: 1px solid #dfd2ff;
+  box-shadow: 0 10px 22px rgba(106, 88, 168, 0.12);
+}
+
+body .student-results .result-card:hover {
+  border-color: #bfa8f2;
+  box-shadow: 0 14px 28px rgba(97, 74, 170, 0.18);
+}
+
+body .student-results .marks-fill {
+  background: linear-gradient(90deg, #8a67dc 0%, #b598ef 100%);
+}
+
+body .student-results .marks-number,
+body .student-results .percentage,
+body .student-results .marks-row strong {
+  color: #6d52b8;
+}
+
+body .student-results .btn-primary {
+  background: linear-gradient(180deg, #9a79e2 0%, #7b5cc9 100%);
+}
+
+body .student-results .btn-primary:hover {
+  background: linear-gradient(180deg, #8b68dc 0%, #694ab8 100%);
+}
+
+body .student-results .btn-secondary {
+  background: #ece4ff;
+  color: #5d469f;
+  border: 1px solid #d3c2ff;
+}
+
+body .student-results .btn-secondary:hover {
+  background: #e1d5ff;
+  color: #4f3a90;
+}
